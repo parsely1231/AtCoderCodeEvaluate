@@ -1,4 +1,5 @@
 div {
-  height: 300px;
   color: red;
+  background-color: gray;
+  height: 50px;
 }
