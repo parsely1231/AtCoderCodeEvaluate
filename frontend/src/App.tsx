@@ -7,6 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 
+import {fetchContest} from "./ContestTable";
 
 interface ContestProps {
   name: string;
@@ -70,19 +71,6 @@ const IdPage: React.FC<IdProps> = (props) => {
 
 const API_URL = process.env.TEST_API_URL;
 
-const fetchContestsInfo = () => {
-  fetch(`${API_URL}`)
-    .then(res => {
-      if (res.ok) {
-        return res.json()
-      } else {
-        console.log(res);
-        return;
-      }
-    })
-    .catch(() => undefined)
-};
-
 
 const App = () => {
   return (
@@ -90,6 +78,7 @@ const App = () => {
       <div>
         <Link to={"/abc"}>abc</Link>
         <Link to={"/abc/:20"}>abc20</Link>
+        <button onClick={fetchContest}></button>
         <Switch>
           <Route
             exact
