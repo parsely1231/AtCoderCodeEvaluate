@@ -2,7 +2,7 @@ const proxy = require("http-proxy-middleware");
 
 module.exports = function(app) {
   app.use(
-    proxy("/atcoder/resources/contest-problem.json", {
+    proxy("/atcoder/resources/problems.json", {
       target: "https://kenkoooo.com",
       changeOrigin: true,
 

@@ -6,54 +6,8 @@ import {
   Redirect,
   Link,
 } from "react-router-dom";
+import { ContestTable } from "./ContestTable"
 
-import {fetchContest} from "./ContestTable";
-
-interface ContestProps {
-  name: string;
-  problems: string
-}
-
-const ContestClass = (name:string, problems:string):ContestProps => {
-  return {
-    name: name,
-    problems: problems,
-  }
-}
-
-
-const sampleContests = [
-  ContestClass('ABC120', 'A'),
-  ContestClass('ABC130', 'B'),
-]
-
-const ContestLine: React.FC<ContestProps> = props => {
-  return (
-    <li>{props.name}: {props.problems}</li>
-  )
-}
-
-interface TableProps {
-  contests: ContestProps[]
-}
-
-const ContestTable: React.FC<TableProps> = (props) => {
-  const contests = props.contests;
-  return (
-  <div>
-    <ul>
-      {contests.map((contest:ContestProps) => {
-        return(
-          <ContestLine
-            name={contest.name}
-            problems={contest.problems}
-            />
-        )
-      })}
-    </ul>
-  </div>
-  );
-};
 
 interface IdProps {
   id: string
@@ -69,26 +23,17 @@ const IdPage: React.FC<IdProps> = (props) => {
 }
 
 
-const API_URL = process.env.TEST_API_URL;
-
-
 const App = () => {
   return (
     <Router>
-      <div>
-        <Link to={"/abc"}>abc</Link>
-        <Link to={"/abc/:20"}>abc20</Link>
-        <button onClick={fetchContest}></button>
+      <div className="container">
         <Switch>
           <Route
             exact
             path="/"
             component={() => (
-              <div>AtCoder Code Evaluate
+              <div>AtCoder XXXXXXXXX
                 <p>root page</p>
-                <ContestTable
-                  contests={sampleContests}
-                />
               </div>
             )}
           />
@@ -110,6 +55,7 @@ const App = () => {
           />
           <Redirect path="/arc" to="/" />
         </Switch>
+        <ContestTable/>
       </div>
     </Router>
   );
