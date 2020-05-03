@@ -2,6 +2,11 @@
   height: 100%;
 }
 
+.container .MuiButton-contained:focus {
+  background-color: royalblue;
+  color: white;
+}
+
 .container .difficulty-red {
   color: red;
 }
@@ -36,6 +41,7 @@
 
 .container a {
   color: cornflowerblue;
+  text-decoration: none;
 }
 
 .container a:hover {

@@ -1,6 +1,11 @@
 .container {
   height: 100%;
 
+  & .MuiButton-contained:focus {
+    background-color: royalblue;
+    color: white;
+  }
+
   & .difficulty {
     &-red {
       color: red;
@@ -30,7 +35,9 @@
 
   & a {
     $contestLinkColor: cornflowerblue;
+
     color: $contestLinkColor;
+    text-decoration: none;
 
     &:hover {
       color: royalblue;

@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import {Button} from "@material-ui/core"
 
 
 import { ContestLink }  from "./ContestLink";
@@ -89,9 +90,9 @@ export const ContestTable: React.FC = () => {
 
   return (
     <TableContainer>
-      <button onClick={setABC}>ABC</button>
-      <button onClick={setARC}>ARC</button>
-      <button onClick={setAGC}>AGC</button>
+      <Button variant="contained" onClick={setABC}>ABC</Button>
+      <Button variant="contained" onClick={setAGC}>AGC</Button>
+      <Button variant="contained" onClick={setARC}>ARC</Button>
       {title}
       <Table>
         <TableHead>
