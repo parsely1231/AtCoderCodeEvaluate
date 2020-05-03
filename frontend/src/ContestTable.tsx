@@ -29,10 +29,11 @@ const TableLine: React.FC<TableLineProps> = (props) => {
         return (
         <TableCell>
           <LengthSquare
-            lengthAve={1900}
+            lengthAve={3000}
           />
           <ProblemLink
             constestId={props.contestId}
+            lengthAve={3000}
             problemTitle={problem}
           />
         </TableCell>

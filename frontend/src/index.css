@@ -2,16 +2,44 @@
   height: 100%;
 }
 
-.container a:link {
-  color: cornflowerblue;
+.container .difficulty-red {
+  color: red;
 }
 
-.container a:visited {
+.container .difficulty-orange {
+  color: orange;
+}
+
+.container .difficulty-yellow {
+  color: yellow;
+}
+
+.container .difficulty-blue {
+  color: blue;
+}
+
+.container .difficulty-cyan {
+  color: cyan;
+}
+
+.container .difficulty-green {
+  color: green;
+}
+
+.container .difficulty-brown {
+  color: brown;
+}
+
+.container .difficulty-gray {
+  color: gray;
+}
+
+.container a {
   color: cornflowerblue;
 }
 
 .container a:hover {
-  color: cadetblue;
+  color: royalblue;
 }
 
 .container .length-square {

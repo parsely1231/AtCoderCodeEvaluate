@@ -1,19 +1,41 @@
 .container {
   height: 100%;
 
+  & .difficulty {
+    &-red {
+      color: red;
+    }
+    &-orange {
+      color: orange;
+    }
+    &-yellow {
+      color: yellow;
+    }
+    &-blue {
+      color: blue;
+    }
+    &-cyan {
+      color: cyan;
+    }
+    &-green {
+      color: green;
+    }
+    &-brown {
+      color: brown;
+    }
+    &-gray {
+      color: gray;
+    }
+  }
+
   & a {
     $contestLinkColor: cornflowerblue;
+    color: $contestLinkColor;
 
-    &:link {
-      color: $contestLinkColor;
-    }
-
-    &:visited {
-      color: $contestLinkColor;
-    }
     &:hover {
-      color: cadetblue;
+      color: royalblue;
     }
+
   }
 
   & .length-square {
