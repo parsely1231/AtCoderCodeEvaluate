@@ -14,7 +14,7 @@ const fetchContest = () => {
   fetch(PROBLEMS_URL)
     .then(res => res.json())
     .then((problems: ProblemJSON[]) => {
-
+      console.log('#######fetch API#########')
       const pushProblemToContestDict = (problem:ProblemJSON, contestDict:Map<string, string[]>) => {
         const contestId: string = problem.contest_id;
         if (contestDict.get(contestId) === undefined) contestDict.set(contestId, []);

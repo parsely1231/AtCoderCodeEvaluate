@@ -1,3 +1,20 @@
 .container {
   height: 100%;
 }
+
+.container .contest-link:link {
+  color: cornflowerblue;
+}
+
+.container .contest-link:visited {
+  color: cornflowerblue;
+}
+
+.container .contest-link:hover {
+  color: cadetblue;
+}
+
+.container .table {
+  background-color: rosybrown;
+}
+/*# sourceMappingURL=index.css.map */

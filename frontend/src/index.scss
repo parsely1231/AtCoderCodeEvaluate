@@ -1,0 +1,24 @@
+.container {
+  height: 100%;
+
+  & .contest-link {
+    $contestLinkColor: cornflowerblue;
+
+    &:link {
+      color: $contestLinkColor;
+    }
+
+    &:visited {
+      color: $contestLinkColor;
+    }
+    &:hover {
+      color: cadetblue;
+    }
+  }
+
+  & .table {
+    background-color: rosybrown;
+
+
+  }
+}

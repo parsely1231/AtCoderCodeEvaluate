@@ -6,6 +6,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+
+import { ContestLink }  from "./ContestLink";
 import { fetchContest } from "./fetchContest";
 
 
@@ -16,8 +18,11 @@ interface TableLineProps {
 
 const TableLine: React.FC<TableLineProps> = (props) => {
   return (
-    <TableRow key={props.contestId}>
-      <TableCell component="th" scope="row">{props.contestId}</TableCell>
+    <TableRow>
+      <TableCell key={props.contestId} component="th" scope="row">
+        <ContestLink contestId={props.contestId} />
+      </TableCell>
+
       {props.problems.map((problem) => {
         return (
         <TableCell>{problem}</TableCell>
@@ -30,6 +35,7 @@ const TableLine: React.FC<TableLineProps> = (props) => {
 
 export const ContestTable: React.FC = () => {
   const [contestData, setContestData] = useState(new Map<string, string[]>())
+  const tableHeaderElement = ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
 
   useEffect(() => {
     fetchContest().then(data => setContestData(data))
@@ -40,19 +46,19 @@ export const ContestTable: React.FC = () => {
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
 
-
   const tableLineList:React.ReactElement[] = []
 
   contestData.forEach((problems, contestId) => {
     if (contestId.slice(0,3).toUpperCase() === contestType) {
-    tableLineList.push(
-      <TableLine
-        contestId={contestId.toUpperCase()}
-        problems={problems}
-      />)
-    }
+      tableLineList.push(
+        <TableLine
+          contestId={contestId.toUpperCase()}
+          problems={problems}
+        />)
+      }
   })
   tableLineList.reverse();
+  console.log('finish table line list')
 
   const getTitle = (contestType:string): string => {
     switch (contestType) {
@@ -76,16 +82,14 @@ export const ContestTable: React.FC = () => {
       <button onClick={setARC}>ARC</button>
       <button onClick={setAGC}>AGC</button>
       {title}
-      <Table aria-label="simple table">
+      <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Contest</TableCell>
-            <TableCell>A</TableCell>
-            <TableCell>B</TableCell>
-            <TableCell>C</TableCell>
-            <TableCell>D</TableCell>
-            <TableCell>E</TableCell>
-            <TableCell>F</TableCell>
+            {tableHeaderElement.map((elem) => {
+              return (
+              <TableCell>{elem}</TableCell>
+              )
+            })}
           </TableRow>
         </TableHead>
         <TableBody>
