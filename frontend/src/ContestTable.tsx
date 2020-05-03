@@ -8,7 +8,9 @@ import TableRow from '@material-ui/core/TableRow';
 
 
 import { ContestLink }  from "./ContestLink";
+import { ProblemLink } from "./ProblemLink";
 import { fetchContest } from "./fetchContest";
+import { LengthSquare } from "./LengthSquare"
 
 
 interface TableLineProps {
@@ -25,7 +27,15 @@ const TableLine: React.FC<TableLineProps> = (props) => {
 
       {props.problems.map((problem) => {
         return (
-        <TableCell>{problem}</TableCell>
+        <TableCell>
+          <LengthSquare
+            lengthAve={1900}
+          />
+          <ProblemLink
+            constestId={props.contestId}
+            problemTitle={problem}
+          />
+        </TableCell>
         )
       })}
     </TableRow>
