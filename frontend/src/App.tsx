@@ -6,6 +6,7 @@ import {
   Redirect,
   Link,
 } from "react-router-dom";
+
 import { ContestTable } from "./pages/TablePage/ContestTable"
 
 
@@ -29,6 +30,8 @@ const App = () => {
   return (
     <Router>
       <div className="container">
+        <Link to="/table">Table</Link>
+        <Link to="/">Home</Link>
         <Switch>
           <Route
             exact
@@ -39,20 +42,10 @@ const App = () => {
               </div>
             )}
           />
-          <Route
-            path="/table"
-            component={() => {
-              <TablePage/>
-            }}
-            
-          />
-          <Route
-            exact
-            path="/abc"
-            component={() => (
-              <div>ABC page</div>
-            )}
-          />
+          <Route path="/table">
+            <ContestTable />
+          </Route>
+
           <Route
             path="/abc/:id"
             render={({ match }) => {
@@ -64,7 +57,6 @@ const App = () => {
           />
           <Redirect path="/arc" to="/" />
         </Switch>
-        <ContestTable/>
       </div>
     </Router>
   );

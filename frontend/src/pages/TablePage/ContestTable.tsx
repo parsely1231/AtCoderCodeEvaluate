@@ -45,6 +45,9 @@ const apiToContestDataByType = (apiData: ContestsData): Map<ContestType, Contest
     }
     contestsDataByType.get(contestType)?.push(contest)
   })
+  for (const key in contestsDataByType) {
+    contestsDataByType.get(key)?.sort().reverse();
+  }
   return contestsDataByType
 }
 

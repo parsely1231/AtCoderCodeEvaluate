@@ -5,6 +5,7 @@ const PROBLEMS_URL = "/atcoder/resources/problems.json";
 
 
 const fetchContest = (): Promise<ContestsData> => {
+  console.log('API fetch');
   return (
   fetch(PROBLEMS_URL)
     .then(res => res.json())
@@ -15,7 +16,6 @@ const fetchContest = (): Promise<ContestsData> => {
         contestDict.get(contestId)?.push(problem);
       }
       const contestDict: ContestsData = new Map();
-      problems.reverse()
       for (const problem of problems) {
         pushProblemToContestDict(problem, contestDict);
       }

@@ -55,6 +55,16 @@
     width: 10px;
   }
 
+  & .exectime-circle {
+    display: inline-block;
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 1px;
+    margin-right: 5px;
+    height: 10px;
+    width: 10px;
+  }
+
   & .table {
     background-color: rosybrown;
 
