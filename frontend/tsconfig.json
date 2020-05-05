@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "downlevelIteration": true,
     "lib": [
       "dom",
       "dom.iterable",
@@ -10,7 +11,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "extends": "./tsconfig.paths.json",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
@@ -20,6 +20,7 @@
     "noEmit": true,
     "jsx": "preserve"
   },
+  "extends": "./tsconfig.paths.json",
   "include": [
     "src"
   ]

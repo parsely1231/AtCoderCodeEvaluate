@@ -1,38 +1,16 @@
 import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "react";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import {Button, ButtonGroup} from "@material-ui/core"
+import { Button, ButtonGroup } from "@material-ui/core"
 
+import { ContestsData, Contest } from "src/interfaces/interfaces"
 
-import { ContestLink }  from "./ContestLink";
-import { ProblemLink } from "./ProblemLink";
 import { fetchContest } from "./fetchContest";
-import { LengthSquare } from "./LengthSquare"
 
+import { ContestLine } from "./ContestLine"
+import { ContestTableHeader } from "./ContestTableHeader"
 
-
-
-console.log('header elem create')
-
-const getHeaderElems = (contestType: string): string[] => {
-  switch (contestType) {
-    case "ABC":
-      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
-    
-    case "ARC":
-      return ['Contest', 'C', 'D', 'E', 'F']
-    
-    case "AGC":
-      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F', 'F2']
-    
-    default:
-      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
-    }
-  }
 
 const getTitle = (contestType:string): string => {
   switch (contestType) {
@@ -50,73 +28,64 @@ const getTitle = (contestType:string): string => {
   }
 }
 
-const apiToContestData = (apiData: Map<string, string[]>): Map<string, React.ReactElement[]>  => {
-  const contestData: Map<string, React.ReactElement[]> = new Map([
+type ContestType = string
+
+const apiToContestDataByType = (apiData: ContestsData): Map<ContestType, Contest[]>  => {
+  const contestsDataByType: Map<ContestType, Contest[]> = new Map([
     ['ABC', []],
     ['ARC', []],
     ['AGC', []],
   ])
 
   apiData.forEach((problems, contestId) => {
-    console.log(contestId)
     const contestType = contestId.slice(0, 3).toUpperCase();
-    contestData.get(contestType)?.push(
-      <TableLine
-        contestId={contestId.toUpperCase()}
-        problems={problems}
-      />
-    )
+    const contest: Contest = {
+      contestId: contestId,
+      problems: problems
+    }
+    contestsDataByType.get(contestType)?.push(contest)
   })
-  return contestData
+  return contestsDataByType
 }
 
 export const ContestTable: React.FC = () => {
-  const [contestData, setContestData] = useState(new Map<string, ReactElement[]>())
-  console.log('FIRST');
+  const [contestDataByType, setContestDataByType] = useState(new Map<ContestType, Contest[]>())
 
   useEffect(() => {
     fetchContest()
-      .then((apiData) => setContestData(apiToContestData(apiData)))
+      .then((apiData) => setContestDataByType(apiToContestDataByType(apiData)))
   }, []);
 
   const [contestType, setContestType]: [string, Function] = useState('ABC');
   const setABC = useCallback(() => setContestType('ABC'), []);
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
-
-
   
-  console.log('finish table line list')
-
-  
-  const title :React.ReactElement = <h2>{getTitle(contestType)}</h2>
-
-  const headerElems: string[] = getHeaderElems(contestType);
+  const selectedContests = contestDataByType.get(contestType)
 
   return (
     <TableContainer>
-    <ButtonGroup>
-      <Button variant="contained" onClick={setABC}>ABC</Button>
-      <Button variant="contained" onClick={setARC}>ARC</Button>
-      <Button variant="contained" onClick={setAGC}>AGC</Button>
-    </ButtonGroup>
-      {title}
-      <Table>
-        <TableHead>
-          <TableRow>
-            {headerElems.map((elem) => {
+      <ButtonGroup>
+        <Button variant="contained" onClick={setABC}>ABC</Button>
+        <Button variant="contained" onClick={setARC}>ARC</Button>
+        <Button variant="contained" onClick={setAGC}>AGC</Button>
+      </ButtonGroup>
+        <h2>{getTitle(contestType)}</h2>
+        <Table>
+          <ContestTableHeader contestType={contestType} />
+
+          <TableBody>
+            {selectedContests?.map((contest) => {
               return (
-              <TableCell>{elem}</TableCell>
+                <ContestLine
+                  contestId={contest.contestId}
+                  problems={contest.problems}
+                />
               )
             })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
+          </TableBody>
 
-          {contestData.get(contestType)}
-          
-        </TableBody>
-      </Table>
+        </Table>
     </TableContainer>
   );
 }

@@ -1,36 +1,31 @@
 import React from "react"
 import { TableCell, TableRow } from "@material-ui/core"
 
-import   from "src/"
+import { Problem } from "src/interfaces/interfaces"
 
 import { ProblemLink } from "./ProblemLink"
-import { LengthSquare } from "./LengthSquare"
-
-
-interface Problem {
-  title: string;
-  contestId: string;
-  codeSizeAverage?: number;
-  execTimeAverage?: number;
-}
+import { CodeSizeSquare } from "./CodeSizeSquare"
+import { ExecTimeCircle } from "./ExecTimeCircle"
 
 
 interface ProblemCellProps {
   problem: Problem
 }
 
-
-export const ProblemCell : React.FC<ProblemCellProps> = (props) => {
+export const ProblemCell : React.FC<ProblemCellProps> = ({ problem }) => {
+  const language: string = 'Python';
   return (
-
         <TableCell>
-          <LengthSquare
-            lengthAve={3000}
+          <CodeSizeSquare
+            codeSizeAve={problem.codeSizeAverage?.get(language) || 3000}
+          />
+          <ExecTimeCircle
+            execTimeAve={problem.execTimeAverage?.get(language) || 1200}
           />
           <ProblemLink
-            constestId={props.problem.contestId}
+            constestId={problem.contest_id}
             lengthAve={3000}
-            problemTitle={props.problem.title}
+            problemTitle={problem.title}
           />
         </TableCell>
   )
