@@ -42,7 +42,6 @@ const getColor = (lengthAve: number): string => {
 }
   
 
-
 export const LengthSquare: React.FC<LengthCircleProps> = (props) => {
   const color = getColor(props.lengthAve);
   const fill: number = 

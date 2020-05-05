@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "react";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {Button} from "@material-ui/core"
+import {Button, ButtonGroup} from "@material-ui/core"
 
 
 import { ContestLink }  from "./ContestLink";
@@ -44,13 +44,76 @@ const TableLine: React.FC<TableLineProps> = (props) => {
   )
 }
 
+console.log('header elem create')
+
+const getHeaderElems = (contestType: string): string[] => {
+  switch (contestType) {
+    case "ABC":
+      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
+    
+    case "ARC":
+      return ['Contest', 'C', 'D', 'E', 'F']
+    
+    case "AGC":
+      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F', 'F2']
+    
+    default:
+      return ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
+    }
+  }
+
+const getTitle = (contestType:string): string => {
+  switch (contestType) {
+  case "ABC":
+    return "AtCoder Beginner Contest"
+  
+  case "ARC":
+    return "AtCoder Regular Contest"
+  
+  case "AGC":
+    return "AtCoder Grand Contest"
+  
+  default:
+    return "AtCoder Beginner Contest"
+  }
+}
+
+const apiToContestData = (apiData: Map<string, string[]>): Map<string, React.ReactElement[]>  => {
+  const contestData: Map<string, React.ReactElement[]> = new Map([
+    ['ABC', []],
+    ['ARC', []],
+    ['AGC', []],
+  ])
+
+  apiData.forEach((problems, contestId) => {
+    console.log(contestId)
+    const contestType = contestId.slice(0, 3).toUpperCase();
+    contestData.get(contestType)?.push(
+      <TableLine
+        contestId={contestId.toUpperCase()}
+        problems={problems}
+      />
+    )
+  })
+  return contestData
+}
+
+console.log('header elem completed')
+
+console.log('Create Map')
+const ContestTableMap: Map<string, string[]> = new Map([
+  ['ABC', []],
+  ['ARC', []],
+  ['AGC', []],
+])
 
 export const ContestTable: React.FC = () => {
-  const [contestData, setContestData] = useState(new Map<string, string[]>())
-  const tableHeaderElement = ['Contest', 'A', 'B', 'C', 'D', 'E', 'F']
+  const [contestData, setContestData] = useState(new Map<string, ReactElement[]>())
+  console.log('FIRST');
 
   useEffect(() => {
-    fetchContest().then(data => setContestData(data))
+    fetchContest()
+      .then((apiData) => setContestData(apiToContestData(apiData)))
   }, []);
 
   const [contestType, setContestType]: [string, Function] = useState('ABC');
@@ -58,46 +121,27 @@ export const ContestTable: React.FC = () => {
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
 
-  const tableLineList:React.ReactElement[] = []
 
-  contestData.forEach((problems, contestId) => {
-    if (contestId.slice(0,3).toUpperCase() === contestType) {
-      tableLineList.push(
-        <TableLine
-          contestId={contestId.toUpperCase()}
-          problems={problems}
-        />)
-      }
-  })
-  tableLineList.reverse();
+  
   console.log('finish table line list')
 
-  const getTitle = (contestType:string): string => {
-    switch (contestType) {
-    case "ABC":
-      return "AtCoder Beginner Contest"
-    
-    case "ARC":
-      return "AtCoder Regular Contest"
-    
-    case "AGC":
-      return "AtCoder Grand Contest"
-    
-    default:
-      return "AtCoder Beginner Contest"
-  }}
+  
   const title :React.ReactElement = <h2>{getTitle(contestType)}</h2>
+
+  const headerElems: string[] = getHeaderElems(contestType);
 
   return (
     <TableContainer>
+    <ButtonGroup>
       <Button variant="contained" onClick={setABC}>ABC</Button>
-      <Button variant="contained" onClick={setAGC}>AGC</Button>
       <Button variant="contained" onClick={setARC}>ARC</Button>
+      <Button variant="contained" onClick={setAGC}>AGC</Button>
+    </ButtonGroup>
       {title}
       <Table>
         <TableHead>
           <TableRow>
-            {tableHeaderElement.map((elem) => {
+            {headerElems.map((elem) => {
               return (
               <TableCell>{elem}</TableCell>
               )
@@ -106,7 +150,7 @@ export const ContestTable: React.FC = () => {
         </TableHead>
         <TableBody>
 
-          {tableLineList}
+          {contestData.get(contestType)}
           
         </TableBody>
       </Table>

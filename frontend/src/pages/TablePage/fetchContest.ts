@@ -7,14 +7,16 @@ interface ProblemJSON {
   title: string;
 }
 
-
-
-const fetchContest = () => {
+/**
+ * fetch AtCoder Problems API and get problems.json
+ * @return {contestId : problem[]}
+ * ex. {abc120: [A.xxyyzz, B.iijjkk, C.aabbcc], agc24: [A.------, ....]}
+ */
+const fetchContest = (): Promise<Map<string, string[]>> => {
   return (
   fetch(PROBLEMS_URL)
     .then(res => res.json())
     .then((problems: ProblemJSON[]) => {
-      console.log('#######fetch API#########')
       const pushProblemToContestDict = (problem:ProblemJSON, contestDict:Map<string, string[]>) => {
         const contestId: string = problem.contest_id;
         if (contestDict.get(contestId) === undefined) contestDict.set(contestId, []);

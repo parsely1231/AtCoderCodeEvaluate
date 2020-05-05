@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "extends": "./tsconfig.paths.json",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",

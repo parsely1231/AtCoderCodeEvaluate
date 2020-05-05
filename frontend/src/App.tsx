@@ -22,6 +22,8 @@ const IdPage: React.FC<IdProps> = (props) => {
   )
 }
 
+console.log('APP page')
+
 
 const App = () => {
   return (
