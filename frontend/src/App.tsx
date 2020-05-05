@@ -6,7 +6,7 @@ import {
   Redirect,
   Link,
 } from "react-router-dom";
-import { ContestTable } from "./ContestTable"
+import { ContestTable } from "./pages/TablePage/ContestTable"
 
 
 interface IdProps {
@@ -38,6 +38,13 @@ const App = () => {
                 <p>root page</p>
               </div>
             )}
+          />
+          <Route
+            path="/table"
+            component={() => {
+              <TablePage/>
+            }}
+            
           />
           <Route
             exact

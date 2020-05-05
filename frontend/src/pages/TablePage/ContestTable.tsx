@@ -14,35 +14,7 @@ import { fetchContest } from "./fetchContest";
 import { LengthSquare } from "./LengthSquare"
 
 
-interface TableLineProps {
-  contestId:string;
-  problems:string[];
-}
 
-const TableLine: React.FC<TableLineProps> = (props) => {
-  return (
-    <TableRow>
-      <TableCell key={props.contestId} component="th" scope="row">
-        <ContestLink contestId={props.contestId} />
-      </TableCell>
-
-      {props.problems.map((problem) => {
-        return (
-        <TableCell>
-          <LengthSquare
-            lengthAve={3000}
-          />
-          <ProblemLink
-            constestId={props.contestId}
-            lengthAve={3000}
-            problemTitle={problem}
-          />
-        </TableCell>
-        )
-      })}
-    </TableRow>
-  )
-}
 
 console.log('header elem create')
 
@@ -97,15 +69,6 @@ const apiToContestData = (apiData: Map<string, string[]>): Map<string, React.Rea
   })
   return contestData
 }
-
-console.log('header elem completed')
-
-console.log('Create Map')
-const ContestTableMap: Map<string, string[]> = new Map([
-  ['ABC', []],
-  ['ARC', []],
-  ['AGC', []],
-])
 
 export const ContestTable: React.FC = () => {
   const [contestData, setContestData] = useState(new Map<string, ReactElement[]>())
