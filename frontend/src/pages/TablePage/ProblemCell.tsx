@@ -9,18 +9,22 @@ import { ExecTimeCircle } from "./ExecTimeCircle"
 
 
 interface ProblemCellProps {
-  problem: Problem
+  problem: Problem;
+  showCodeSize: boolean;
+  showExecTime: boolean;
 }
 
-export const ProblemCell : React.FC<ProblemCellProps> = ({ problem }) => {
+export const ProblemCell : React.FC<ProblemCellProps> = ({ problem, showCodeSize, showExecTime }) => {
   const language: string = 'Python';
   return (
         <TableCell>
           <CodeSizeSquare
             codeSizeAve={problem.codeSizeAverage?.get(language) || 3000}
+            showCodeSize={showCodeSize}
           />
           <ExecTimeCircle
             execTimeAve={problem.execTimeAverage?.get(language) || 1200}
+            showExecTime={showExecTime}
           />
           <ProblemLink
             constestId={problem.contest_id}

@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
-import { Button, ButtonGroup } from "@material-ui/core"
+import { Button, ButtonGroup ,Checkbox, FormControlLabel } from "@material-ui/core"
 
 import { ContestsData, Contest } from "src/interfaces/interfaces"
 
@@ -30,7 +30,7 @@ const getTitle = (contestType:string): string => {
 
 type ContestType = string
 
-const apiToContestDataByType = (apiData: ContestsData): Map<ContestType, Contest[]>  => {
+function apiToContestDataByType (apiData: ContestsData): Map<ContestType, Contest[]> {
   const contestsDataByType: Map<ContestType, Contest[]> = new Map([
     ['ABC', []],
     ['ARC', []],
@@ -45,19 +45,17 @@ const apiToContestDataByType = (apiData: ContestsData): Map<ContestType, Contest
     }
     contestsDataByType.get(contestType)?.push(contest)
   })
-  // for (const key in contestsDataByType) {
-  //   contestsDataByType.get(key)?.reverse();
-  // }
-  // for (const key in contestsDataByType) {
-  //   contestsDataByType.get(key)?.sort((contestA, contestB) => {
-  //     return contestA.contestId > contestB.contestId ? 1 : -1  // reverse sort key=contestId
-  //   });
-  // }
+  for (const key of contestsDataByType.keys()) {
+    contestsDataByType.get(key)?.reverse();
+  }
+
   return contestsDataByType
 }
 
 export const ContestTable: React.FC = () => {
   const [contestDataByType, setContestDataByType] = useState(new Map<ContestType, Contest[]>())
+  const [showCodeSize, setShowCodeSize] = useState(true);
+  const [showExecTime, setShowExecTime] = useState(true);
 
   useEffect(() => {
     fetchContest()
@@ -69,10 +67,32 @@ export const ContestTable: React.FC = () => {
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
   
-  const selectedContests = contestDataByType.get(contestType)?.reverse();
+  const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowCodeSize(event.target.checked)
+  }, [])
+
+  const handleShowExecTime = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowExecTime(event.target.checked)
+  }, [])
+
+  const selectedContests = contestDataByType.get(contestType);
 
   return (
     <TableContainer>
+      <div>
+        <FormControlLabel
+            value="showCodeSize"
+            control={<Checkbox color="primary" checked={showCodeSize} onChange={handleShowCodeSize}/>}
+            label="ShowCodeSize"
+            labelPlacement="start"
+        />
+        <FormControlLabel
+            value="showExecTime"
+            control={<Checkbox color="primary" checked={showExecTime} onChange={handleShowExecTime}/>}
+            label="ShowExecTime"
+            labelPlacement="start"
+        />
+      </div>
       <ButtonGroup>
         <Button variant="contained" onClick={setABC}>ABC</Button>
         <Button variant="contained" onClick={setARC}>ARC</Button>
@@ -88,6 +108,8 @@ export const ContestTable: React.FC = () => {
                 <ContestLine
                   contestId={contest.contestId}
                   problems={contest.problems}
+                  showCodeSize={showCodeSize}
+                  showExecTime={showExecTime}
                 />
               )
             })}

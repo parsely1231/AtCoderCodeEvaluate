@@ -3,6 +3,7 @@ import React from "react";
 
 interface CodeSizeSquareProps {
   codeSizeAve: number
+  showCodeSize: boolean
 }
 
 const getColor = (codeSizeAve: number): string => {
@@ -42,7 +43,9 @@ const getColor = (codeSizeAve: number): string => {
 }
   
 
-export const CodeSizeSquare: React.FC<CodeSizeSquareProps> = ({ codeSizeAve }) => {
+export const CodeSizeSquare: React.FC<CodeSizeSquareProps> = ({ codeSizeAve, showCodeSize }) => {
+  if (showCodeSize == false) return null
+
   const color = getColor(codeSizeAve);
   const fill: number = 
     codeSizeAve >= 3200 

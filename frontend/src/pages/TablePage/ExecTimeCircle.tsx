@@ -2,10 +2,13 @@ import React from "react"
 
 
 interface ExecTimeCircleProps {
-  execTimeAve: number
+  execTimeAve: number;
+  showExecTime: boolean;
 }
 
-export const ExecTimeCircle: React.FC<ExecTimeCircleProps> = ({execTimeAve}) => {
+export const ExecTimeCircle: React.FC<ExecTimeCircleProps> = ({ execTimeAve, showExecTime }) => {
+  if (showExecTime == false) return null
+
   const fill: number = 
     execTimeAve >= 2000 
       ? 100 
