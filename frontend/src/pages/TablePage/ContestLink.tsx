@@ -10,11 +10,11 @@ export const ContestLink = (props: ContestLinkProps) => {
   return (
     <a
       className="contest-link"
-      href={ATCODER_CONTEST_BASE_URL + props.contestId.toLowerCase()}
+      href={ATCODER_CONTEST_BASE_URL + props.contestId}
       target="_blank"
       rel="noopener"
     >
-      {props.contestId}
+      {props.contestId.toUpperCase()}
     </a>
   )
 }

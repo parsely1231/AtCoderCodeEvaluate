@@ -45,9 +45,14 @@ const apiToContestDataByType = (apiData: ContestsData): Map<ContestType, Contest
     }
     contestsDataByType.get(contestType)?.push(contest)
   })
-  for (const key in contestsDataByType) {
-    contestsDataByType.get(key)?.sort().reverse();
-  }
+  // for (const key in contestsDataByType) {
+  //   contestsDataByType.get(key)?.reverse();
+  // }
+  // for (const key in contestsDataByType) {
+  //   contestsDataByType.get(key)?.sort((contestA, contestB) => {
+  //     return contestA.contestId > contestB.contestId ? 1 : -1  // reverse sort key=contestId
+  //   });
+  // }
   return contestsDataByType
 }
 
@@ -64,7 +69,7 @@ export const ContestTable: React.FC = () => {
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
   
-  const selectedContests = contestDataByType.get(contestType)
+  const selectedContests = contestDataByType.get(contestType)?.reverse();
 
   return (
     <TableContainer>
