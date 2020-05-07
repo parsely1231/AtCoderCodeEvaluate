@@ -106,6 +106,7 @@ export const ContestTable: React.FC = () => {
             {selectedContests?.map((contest) => {
               return (
                 <ContestLine
+                  key={contest.contestId}
                   contestId={contest.contestId}
                   problems={contest.problems}
                   showCodeSize={showCodeSize}
