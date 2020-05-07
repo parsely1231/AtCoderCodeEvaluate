@@ -1,4 +1,5 @@
 .container {
+  padding: 70px 20px 20px 20px;
   height: 100%;
 
   & .MuiButton-contained:focus {
@@ -82,5 +83,11 @@
     background-color: rosybrown;
 
 
+  }
+}
+
+.nav-button {
+  & span {
+    color: white;
   }
 }

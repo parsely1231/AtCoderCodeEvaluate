@@ -7,6 +7,7 @@ import {
   Link,
 } from "react-router-dom";
 
+import { NavigationBar } from "./components/NavigationBar"
 import { ContestTable } from "./pages/TablePage/ContestTable"
 
 
@@ -29,34 +30,35 @@ console.log('APP page')
 const App = () => {
   return (
     <Router>
+      <NavigationBar/>
       <div className="container">
-        <Link to="/table">Table</Link>
-        <Link to="/">Home</Link>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            component={() => (
-              <div>AtCoder XXXXXXXXX
-                <p>root page</p>
-              </div>
-            )}
-          />
-          <Route path="/table">
-            <ContestTable />
-          </Route>
+          <Link to="/table">Table</Link>
+          <Link to="/">Home</Link>
+          <Switch>
+            <Route
+              exact
+              path="/"
+              component={() => (
+                <div>AtCoder XXXXXXXXX
+                  <p>root page</p>
+                </div>
+              )}
+            />
+            <Route path="/table">
+              <ContestTable />
+            </Route>
 
-          <Route
-            path="/abc/:id"
-            render={({ match }) => {
-              const id:string = match.params.id
-              return (
-                <IdPage id={id} />
-              );
-            }}
-          />
-          <Redirect path="/arc" to="/" />
-        </Switch>
+            <Route
+              path="/abc/:id"
+              render={({ match }) => {
+                const id:string = match.params.id
+                return (
+                  <IdPage id={id} />
+                );
+              }}
+            />
+            <Redirect path="/arc" to="/" />
+          </Switch>
       </div>
     </Router>
   );
