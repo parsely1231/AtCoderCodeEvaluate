@@ -6,6 +6,19 @@
     color: white;
   }
 
+  & .MuiTableRow-root {
+    display: flex;
+
+    & .MuiTableCell-root:nth-child(1) {
+      width: 60px;
+    }
+
+  }
+
+  & .MuiTableCell-root {
+    width: 100%;
+  }
+
   & .difficulty {
     &-red {
       color: red;

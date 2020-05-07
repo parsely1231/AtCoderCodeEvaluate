@@ -20,7 +20,6 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "extends": "./tsconfig.paths.json",
   "include": [
     "src"
   ]

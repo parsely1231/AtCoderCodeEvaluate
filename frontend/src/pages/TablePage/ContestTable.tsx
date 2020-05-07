@@ -1,10 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "react";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
-import { Button, ButtonGroup ,Checkbox, FormControlLabel } from "@material-ui/core"
+import { Button, ButtonGroup ,Checkbox, FormControlLabel, Table, TableBody, TableContainer } from "@material-ui/core"
+// import { FixedSizeList } from "react-window"
 
-import { ContestsData, Contest } from "src/interfaces/interfaces"
+import { ContestsData, Contest } from "../../interfaces/interfaces"
 
 import { fetchContest } from "./fetchContest";
 
@@ -66,6 +64,11 @@ export const ContestTable: React.FC = () => {
   const setABC = useCallback(() => setContestType('ABC'), []);
   const setARC = useCallback(() => setContestType('ARC'), []);
   const setAGC = useCallback(() => setContestType('AGC'), []);
+
+  const problemCount: number = 
+    contestType === "ABC" ? 6
+    :contestType ==='ARC' ? 4
+    : 7;
   
   const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setShowCodeSize(event.target.checked)
@@ -76,6 +79,19 @@ export const ContestTable: React.FC = () => {
   }, [])
 
   const selectedContests = contestDataByType.get(contestType);
+  // const length = selectedContests? selectedContests.length : 0
+  // const Line = ({ index, style }: {index: number, style:any}) => {
+  //   const contest = selectedContests? selectedContests[index] : null;
+  //   if (contest == null) return null;
+  //   return (
+  //     <ContestLine
+  //       key={contest.contestId}
+  //       contestId={contest.contestId}
+  //       problems={contest.problems}
+  //       showCodeSize={showCodeSize}
+  //       showExecTime={showExecTime}
+  //     />
+  //   )}
 
   return (
     <TableContainer>
@@ -103,12 +119,22 @@ export const ContestTable: React.FC = () => {
           <ContestTableHeader contestType={contestType} />
 
           <TableBody>
+            {/* <FixedSizeList
+              className="List"
+              height={1000}
+              itemCount={length}
+              itemSize={20}
+              width={1600}
+            >
+              {Line}
+            </FixedSizeList> */}
             {selectedContests?.map((contest) => {
               return (
                 <ContestLine
                   key={contest.contestId}
                   contestId={contest.contestId}
                   problems={contest.problems}
+                  problemCount={problemCount}
                   showCodeSize={showCodeSize}
                   showExecTime={showExecTime}
                 />

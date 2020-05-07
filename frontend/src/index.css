@@ -7,6 +7,20 @@
   color: white;
 }
 
+.container .MuiTableRow-root {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.container .MuiTableRow-root .MuiTableCell-root:nth-child(1) {
+  width: 60px;
+}
+
+.container .MuiTableCell-root {
+  width: 100%;
+}
+
 .container .difficulty-red {
   color: red;
 }

@@ -1,4 +1,4 @@
-import { Problem, ContestsData } from "src/interfaces/interfaces"
+import { Problem, ContestsData } from "../../interfaces/interfaces"
 
 
 const PROBLEMS_URL = "/atcoder/resources/problems.json";

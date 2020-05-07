@@ -1,7 +1,7 @@
 import React from "react"
-import { TableCell, TableRow } from "@material-ui/core"
+import { TableCell } from "@material-ui/core"
 
-import { Problem } from "src/interfaces/interfaces"
+import { Problem } from "../../interfaces/interfaces"
 
 import { ProblemLink } from "./ProblemLink"
 import { CodeSizeSquare } from "./CodeSizeSquare"
