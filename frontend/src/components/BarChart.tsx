@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import {
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
@@ -27,7 +27,7 @@ const colors = (score: number): string => {
 }
 
 
-export const RankingChart: React.FC = () => {
+export const StatusBarChart: React.FC = () => {
     return (
       <BarChart
         width={500}

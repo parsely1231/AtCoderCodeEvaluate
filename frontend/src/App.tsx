@@ -10,8 +10,9 @@ import {
 import { NavigationBar } from "./components/NavigationBar"
 import { ContestTable } from "./pages/TablePage/ContestTable"
 import { RankingTable } from "./components/Ranking"
-import { sampleData } from "./pages/RankingPage/ExecTimeRankingTable"
-import { RankingChart } from "./pages/RankingPage/BarChart"
+import { sampleData } from "./pages/RankingPage/aggregate"
+import { StatusBarChart } from "./components/BarChart"
+import { UserPage } from "./pages/UserPage/UserPage"
 
 interface IdProps {
   id: string
@@ -36,6 +37,7 @@ const App = () => {
       <div className="container">
           <Link to="/table">Table</Link>
           <Link to="/">Home</Link>
+          <Link to="/user">User</Link>
           <Switch>
             <Route
               exact
@@ -50,9 +52,13 @@ const App = () => {
               <ContestTable />
             </Route>
 
+            <Route path="/user">
+              <UserPage/>
+            </Route>
+
             <Route exact path="/ranking/exectime">
               <RankingTable title={'Total'} ranking={sampleData} />
-              <RankingChart/>
+              <StatusBarChart/>
             </Route>
 
             <Route
