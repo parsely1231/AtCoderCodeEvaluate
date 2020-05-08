@@ -8,7 +8,7 @@ import { EntryData, AggregatedData, RankingEntry, RankingProps } from "../interf
 
 
 export const aggregatedToRanking = (aggregated: AggregatedData) => {
-  aggregated.data
+  return aggregated.data
      .sort((a, b) => b.score - a.score)
      .reduce((ranking, entry, index) => {
        const last = ranking.length === 0 ? undefined : ranking[ranking.length - 1];
@@ -37,7 +37,7 @@ export const RankingTable: React.FC<RankingProps> = ({ title, ranking }) => {
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
-
+  const language = 'Python'
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -45,6 +45,7 @@ export const RankingTable: React.FC<RankingProps> = ({ title, ranking }) => {
 
   return (
       <Paper className={`ranking-${title}`}>
+        <div className={"ranking-title"}>Ranking {language} {title}</div>
         <TableContainer>
           <Table>
             <TableHead>

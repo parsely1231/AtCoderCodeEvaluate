@@ -22,7 +22,14 @@ const sample2: userData = {
   averageScore: 4,
 }
 
-const samples = [sample1, sample2]
+const sample3: userData = {
+  userId: "ccc",
+  totalScore: 20,
+  averageScore: 4,
+}
+
+
+const samples = [sample1, sample2, sample3]
 
 const aggregate = (userDatas: userData[], target: "total" | "average"): AggregatedData => {
   const aggregatedData = userDatas.map((userData) => {
@@ -42,4 +49,7 @@ const aggregate = (userDatas: userData[], target: "total" | "average"): Aggregat
     }
 
 }
+
+export const sampleData = aggregatedToRanking( aggregate(samples, 'total') )
+
 

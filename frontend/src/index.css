@@ -92,6 +92,12 @@
 }
 
 .ranking-table {
-  width: 100%;
+  table-layout: fixed;
+}
+
+.ranking-title {
+  font-size: 22px;
+  text-align: center;
+  padding-top: 10px;
 }
 /*# sourceMappingURL=index.css.map */
