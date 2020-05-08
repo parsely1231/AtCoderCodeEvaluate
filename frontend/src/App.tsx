@@ -9,7 +9,7 @@ import {
 
 import { NavigationBar } from "./components/NavigationBar"
 import { ContestTable } from "./pages/TablePage/ContestTable"
-
+import { samples, RankingTable } from "./pages/RankingPage/ExecTimeRankingTable"
 
 interface IdProps {
   id: string
@@ -46,6 +46,10 @@ const App = () => {
             />
             <Route path="/table">
               <ContestTable />
+            </Route>
+
+            <Route exact path="/ranking/exectime">
+              <RankingTable rankingData={samples} />
             </Route>
 
             <Route
