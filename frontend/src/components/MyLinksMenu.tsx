@@ -15,7 +15,7 @@ const LinkedMenuItem: React.FC<LinkedMenuItemProps> = ({ href, text }) => {
   )
 }
 
-export const MyLinks: React.FC = () => {
+export const MyLinksMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {

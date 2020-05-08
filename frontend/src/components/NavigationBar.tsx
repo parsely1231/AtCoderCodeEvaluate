@@ -8,8 +8,8 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 
 import Zoom from '@material-ui/core/Zoom';
 
-import { MyLinks } from "./MyLinks"
-import { Rankings } from "./Rankings"
+import { MyLinksMenu } from "./MyLinksMenu"
+import { RankingsMenu } from "./RankingsMenu"
 
 interface Props {
   /**
@@ -70,8 +70,8 @@ export const NavigationBar: React.FC = () => {
       <AppBar id="back-to-top-anchor">
         <Toolbar>
           <Typography variant="h6">AtCoder Code Evaluate</Typography>
-          <Rankings/>
-          <MyLinks/>
+          <RankingsMenu/>
+          <MyLinksMenu/>
         </Toolbar>
       </AppBar>
     </div>
