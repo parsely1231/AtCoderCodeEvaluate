@@ -30,6 +30,9 @@ class Contest(models.Model):
     contest_id = models.CharField(primary_key=True, max_length=15)
     type = models.IntegerField(choices=TYPES)
 
+    def __str__(self):
+        return self.contest_id
+
 
 class CodeSizeStatus(models.Model):
     class Meta:
@@ -42,6 +45,9 @@ class CodeSizeStatus(models.Model):
     rank_b = models.IntegerField()
     rank_c = models.IntegerField()
     rank_d = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.problem_id}: {self.language}'
 
 
 class ExecTimeStatus(models.Model):
@@ -56,14 +62,20 @@ class ExecTimeStatus(models.Model):
     rank_c = models.IntegerField()
     rank_d = models.IntegerField()
 
+    def __str__(self):
+        return f'{self.problem_id}: {self.language}'
+
 
 class UserRankingStatus(models.Model):
     class Meta:
         db_table = 'user_ranking_statuses'
-        unique_together = (('user_id', 'language'),)
+        unique_together = (('user_name', 'language'),)
 
     user_name = models.CharField(max_length=40)
     language = models.CharField(max_length=20)
     ac_count = models.IntegerField()
     code_size_points = models.IntegerField()
     exec_time_points = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.user_name}: {self.language}'
