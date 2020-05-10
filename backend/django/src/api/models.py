@@ -2,17 +2,68 @@ from django.db import models
 
 
 class Problem(models.Model):
-    CONTEST_TYPES = ((1, 'ABC'), (2, 'ARC'), (3, 'AGC'), (4, 'Others-Rated'), (5, 'Others-Unrated'))
-
     class Meta:
-        db_table = 'problem'
+        db_table = 'problems'
 
     problem_id = models.CharField(primary_key=True, max_length=20)
     title = models.CharField(max_length=40)
     contest_id = models.CharField(max_length=20)
-    contest_type = models.IntegerField(choices=CONTEST_TYPES)
-    exec_time = models.IntegerField()
-    code_size = models.IntegerField()
 
     def __str__(self):
         return self.problem_id
+
+
+class Contest(models.Model):
+    TYPES = [
+        (1, 'ABC'),
+        (2, 'ARC'),
+        (3, 'AGC'),
+        (4, 'rated-Others'),
+        (5, 'unrated-Others'),
+        (6, 'PAST'),
+        (7, 'Marathon')
+    ]
+
+    class Meta:
+        db_table = 'contests'
+
+    contest_id = models.CharField(primary_key=True, max_length=15)
+    type = models.IntegerField(choices=TYPES)
+
+
+class CodeSizeStatus(models.Model):
+    class Meta:
+        db_table = 'code_size_statuses'
+        unique_together = (('problem_id', 'language'),)
+
+    problem_id = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    language = models.CharField(max_length=20)
+    rank_a = models.IntegerField()
+    rank_b = models.IntegerField()
+    rank_c = models.IntegerField()
+    rank_d = models.IntegerField()
+
+
+class ExecTimeStatus(models.Model):
+    class Meta:
+        db_table = 'exec_time_statuses'
+        unique_together = (('problem_id', 'language'),)
+
+    problem_id = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    language = models.CharField(max_length=20)
+    rank_a = models.IntegerField()
+    rank_b = models.IntegerField()
+    rank_c = models.IntegerField()
+    rank_d = models.IntegerField()
+
+
+class UserRankingStatus(models.Model):
+    class Meta:
+        db_table = 'user_ranking_statuses'
+        unique_together = (('user_id', 'language'),)
+
+    user_name = models.CharField(max_length=40)
+    language = models.CharField(max_length=20)
+    ac_count = models.IntegerField()
+    code_size_points = models.IntegerField()
+    exec_time_points = models.IntegerField()
