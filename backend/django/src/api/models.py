@@ -1,18 +1,6 @@
 from django.db import models
 
 
-class Problem(models.Model):
-    class Meta:
-        db_table = 'problems'
-
-    problem_id = models.CharField(primary_key=True, max_length=20)
-    title = models.CharField(max_length=40)
-    contest_id = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.problem_id
-
-
 class Contest(models.Model):
     TYPES = [
         (1, 'ABC'),
@@ -32,6 +20,18 @@ class Contest(models.Model):
 
     def __str__(self):
         return self.contest_id
+
+
+class Problem(models.Model):
+    class Meta:
+        db_table = 'problems'
+
+    problem_id = models.CharField(primary_key=True, max_length=20)
+    title = models.CharField(max_length=40)
+    contest_id = models.ForeignKey(Contest, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.problem_id
 
 
 class CodeSizeStatus(models.Model):

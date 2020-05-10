@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '91l5l+#lmu4xu%!tab_+8^%$!j0k0jbmp3&=&_t2+974swq_#3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -86,6 +86,33 @@ DATABASES = {
     }
 }
 
+# Local Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'develop': {
+            'format': '%(asctime)s [%(levelname)s] %(pathname)s:%(lineno)d '
+                      '%(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  'class': 'logging.StreamHandler',  'formatter': 'develop',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],  'level': 'DEBUG',  'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],  'level': 'INFO',  'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],  'level': 'DEBUG',  'propagate': False,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
