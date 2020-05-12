@@ -4,7 +4,7 @@ from .models import Problem, CodeSizeStatus, ExecTimeStatus, UserRankingStatus
 
 
 class ProblemSerializer(serializers.ModelSerializer):
-    contest_type = serializers.ReadOnlyField(source='contest_id.type')
+    contest_type = serializers.ReadOnlyField(source='contest_id.get_type_display')
 
     class Meta:
         model = Problem
