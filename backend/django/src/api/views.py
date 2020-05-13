@@ -43,7 +43,7 @@ class UserRankingFilter(filters.FilterSet):
 
     class Meta:
         model = UserRankingStatus
-        fields = ['order_by', 'language', 'user_name', 'ac_count']
+        fields = ['order_by', 'language', 'user_name']
 
 
 class UserRankingStatusViewSet(viewsets.ReadOnlyModelViewSet):

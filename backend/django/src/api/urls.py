@@ -5,6 +5,10 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register('problems', views.ProblemViewSet)
+router.register('code_size_status', views.CodeSizeStatusViewSet)
+router.register('exec_time_status', views.ExecTimeStatusViewSet)
+router.register('user_status', views.UserRankingStatusViewSet)
+
 
 app_name = 'api'
 urlpatterns = [
