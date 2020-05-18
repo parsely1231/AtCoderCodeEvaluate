@@ -6,10 +6,6 @@ from .serializers import ProblemSerializer, CodeSizeStatusSerializer, ExecTimeSt
     UserRankingStatusSerializer
 
 
-class FilterA(filters.FilterSet):
-    contest_type = filters.CharFilter(field_name='contest_id.type')
-
-
 class ProblemViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
