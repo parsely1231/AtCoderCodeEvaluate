@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_title %}csv upload{% endblock %}
+
+
+{% block content %}
+<h3>upload page</h3>
+<form action="{% url 'api:upload' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">アップロード</button>
+</form>
+
+{% endblock content %}

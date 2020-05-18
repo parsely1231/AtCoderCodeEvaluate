@@ -13,4 +13,5 @@ router.register('user_status', views.UserRankingStatusViewSet)
 app_name = 'api'
 urlpatterns = [
     path('', include(router.urls)),
+    path('upload/', views.exec_time_status_upload, name='upload'),
 ]

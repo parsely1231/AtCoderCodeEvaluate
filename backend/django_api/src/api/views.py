@@ -1,5 +1,8 @@
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
+from django.shortcuts import render
+import csv
+from io import TextIOWrapper
 
 from .models import Problem, CodeSizeStatus, ExecTimeStatus, UserRankingStatus
 from .serializers import ProblemSerializer, CodeSizeStatusSerializer, ExecTimeStatusSerializer, \
@@ -47,3 +50,29 @@ class UserRankingStatusViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = UserRankingStatusSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = UserRankingFilter
+
+
+def exec_time_status_upload(request):
+    if 'csv' in request.FILES:
+        form_data = TextIOWrapper(request.FILES['csv'].file, encoding='utf-8')
+        csv_file = csv.reader(form_data)
+
+        exec_time_status_list = []
+        for line in csv_file:
+            language, problem_id, rank_a, rank_b, rank_c, rank_d = line
+            exec_time_status = ExecTimeStatus(
+                language=language,
+                problem_id=problem_id,
+                rank_a=rank_a,
+                rank_b=rank_b,
+                rank_c=rank_c,
+                rank_d=rank_d,
+            )
+            exec_time_status_list.append(exec_time_status)
+
+        ExecTimeStatus.objects.bulk_create(exec_time_status_list)
+
+        return render(request, 'api/upload.html')
+
+    else:
+        return render(request, 'api/upload.html')
