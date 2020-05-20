@@ -139,6 +139,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/api-auth/login'
+
 TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True

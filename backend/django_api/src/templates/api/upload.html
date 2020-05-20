@@ -7,8 +7,16 @@
 <h3>upload page</h3>
 <form action="{% url 'api:upload' %}" method="post" enctype="multipart/form-data">
   {% csrf_token %}
+  <div>
+    data type: <label><input type="radio" name="type" value="contest">contest  </label>
+    <label><input type="radio" name="type" value="problem">problem  </label>
+    <label><input type="radio" name="type" value="exec_status">exec_status  </label>
+    <label><input type="radio" name="type" value="code_size_status">code_size_status  </label>
+    <label><input type="radio" name="type" value="user_ranking_status">user_ranking_status</label>
+  </div>
+
   <input type="file" data-default-file="ファイルを選択してください" name="csv">
-  <button type="submit" class="btn" name="button">アップロード</button>
+  <button type="submit" class="btn" name="button">upload</button>
 </form>
 
 {% endblock content %}
