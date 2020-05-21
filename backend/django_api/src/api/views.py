@@ -112,7 +112,7 @@ def code_size_status_csv_save(csv_file):
 def problem_csv_save(csv_file):
     problems = []
     for line in csv_file:
-        problem_id, title, contest_id = line
+        problem_id, contest_id, title = line
         problem = Problem(
             problem_id=problem_id,
             title=title,
@@ -136,7 +136,7 @@ def contest_csv_save(csv_file):
 def user_ranking_status_csv_save(csv_file):
     user_ranking_status_list = []
     for line in csv_file:
-        user_name, language, ac_count, code_size_points, exec_time_points = line
+        user_name, language, code_size_points, exec_time_points, ac_count = line
         user_ranking_status = UserRankingStatus(
             user_name=user_name,
             language=language,

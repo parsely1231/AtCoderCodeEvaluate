@@ -15,7 +15,7 @@ class Contest(models.Model):
     class Meta:
         db_table = 'contests'
 
-    contest_id = models.CharField(primary_key=True, max_length=15)
+    contest_id = models.CharField(primary_key=True, max_length=40)
     type = models.IntegerField(choices=TYPES)
 
     def __str__(self):
@@ -26,8 +26,8 @@ class Problem(models.Model):
     class Meta:
         db_table = 'problems'
 
-    problem_id = models.CharField(primary_key=True, max_length=20)
-    title = models.CharField(max_length=40)
+    problem_id = models.CharField(primary_key=True, max_length=40)
+    title = models.CharField(max_length=100)
     contest_id = models.ForeignKey(Contest, on_delete=models.CASCADE)
 
     def __str__(self):
