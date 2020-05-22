@@ -52,7 +52,7 @@ exec_statistics['25%'] = exec_statistics_25['execution_time']
 exec_statistics['50%'] = exec_statistics_50['execution_time']
 exec_statistics['75%'] = exec_statistics_75['execution_time']
 
-exec_statistics.drop('min', axis=1).to_csv('./exec_statistics', header=False)
+exec_statistics.drop('min', axis=1).to_csv('./exec_statistics.csv', header=False)
 
 
 length_statistics = group_prob_lang_leng.min().rename(columns={'length': 'min'})
@@ -66,7 +66,7 @@ length_statistics['25%'] = length_statistics_25['length']
 length_statistics['50%'] = length_statistics_50['length']
 length_statistics['75%'] = length_statistics_75['length']
 
-length_statistics.drop('min', axis=1).to_csv('./length_statistics', header=False)
+length_statistics.drop('min', axis=1).to_csv('./length_statistics.csv', header=False)
 
 
 list_for_user_info = ['user_id', 'problem_id', 'language', 'length', 'execution_time']

@@ -11,7 +11,7 @@ from .serializers import ProblemSerializer, CodeSizeStatusSerializer, ExecTimeSt
 
 
 class ProblemViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Problem.objects.all()
+    queryset = Problem.objects.select_related('contest_id').all()
     serializer_class = ProblemSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_fields = ['contest_id__type']

@@ -4,9 +4,6 @@ from .models import Problem, CodeSizeStatus, ExecTimeStatus, UserRankingStatus
 
 
 class ProblemSerializer(serializers.ModelSerializer):
-    """TODO
-    リスト取得時に各データでコンテストタイプ取得のためのクエリがはしる。
-    かなり無駄なのでテーブルジョイン等でクエリ数を減らしたい"""
     contest_type = serializers.ReadOnlyField(source='contest_id.get_type_display')
 
     class Meta:
