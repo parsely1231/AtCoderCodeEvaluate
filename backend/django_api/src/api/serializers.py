@@ -17,25 +17,13 @@ class CodeSizeStatusSerializer(serializers.ModelSerializer):
         exclude = ['id']
 
 
-class CodeSizeStatusListSerializer(serializers.ListSerializer):
-    child = CodeSizeStatusSerializer()
-
-
 class ExecTimeStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExecTimeStatus
         exclude = ['id']
 
 
-class ExecTimeStatusListSerializer(serializers.ListSerializer):
-    child = ExecTimeStatusSerializer()
-
-
 class UserRankingStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRankingStatus
         exclude = ['id']
-
-
-class UserRankingStatusListSerializer(serializers.ListSerializer):
-    child = UserRankingStatusSerializer()
