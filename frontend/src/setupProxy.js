@@ -9,6 +9,12 @@ module.exports = function(app) {
     })
   );
   app.use(
+    proxy("/atcoder/atcoder-api/", {
+      target: "https://kenkoooo.com",
+      changeOrigin: true,
+    })
+  );
+  app.use(
     proxy("/internal-api", {
       target: "https://kenkoooo.com",
       changeOrigin: true,
@@ -17,4 +23,10 @@ module.exports = function(app) {
       }
     })
   );
+  app.use(
+    proxy("/api", {
+      target: process.env.BACKEND_API_URL,
+      changeOrigin: true,
+    })
+  )
 };

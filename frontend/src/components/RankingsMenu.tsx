@@ -8,7 +8,7 @@ interface LinkedMenuItemProps {
   text: string;
 }
 
-const ToLinkMenuItem: React.FC<LinkedMenuItemProps> = ({ to, text }) => {
+const LinkdeMenuItem: React.FC<LinkedMenuItemProps> = ({ to, text }) => {
   return (
     <Link to={to}>
       <MenuItem>{text}</MenuItem>
@@ -39,8 +39,8 @@ export const RankingsMenu: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <ToLinkMenuItem to={"/ranking/codesize"} text={"Code Size"}/>
-        <ToLinkMenuItem to={"/ranking/exectime"} text={"Exec Time"}/>
+        <LinkdeMenuItem to={"/ranking/codesize"} text={"Code Size"}/>
+        <LinkdeMenuItem to={"/ranking/exectime"} text={"Exec Time"}/>
 
       </Menu>
     </>
