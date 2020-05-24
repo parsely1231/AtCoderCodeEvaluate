@@ -28,5 +28,5 @@ module.exports = function(app) {
       target: process.env.BACKEND_API_URL,
       changeOrigin: true,
     })
-  )
+  );
 };
