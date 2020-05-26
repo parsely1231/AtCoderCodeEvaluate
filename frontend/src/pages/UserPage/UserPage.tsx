@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 import { StatusBarChart } from "../../components/BarChart"
 import { StatusPieChart } from "../../components/StatusPieChart"
@@ -45,36 +45,28 @@ function filterNormalContest(submissions: Submission[]) {
 type ProblemID = string
 type CodeStatusMap = Map<ProblemID, number>
 
-type ContestType = string
-type CodeStatusByContestType = Map<ContestType, CodeStatusMap>
-
 type StatusType = 'length' | 'exec'
-type StatusMap = Map<StatusType, CodeStatusByContestType>
+type StatusMapByType = Map<StatusType, CodeStatusMap>
 
-function toStatusMap(submissions: Submission[]): StatusMap {
-  const statusMap: StatusMap = new Map(
-    [['exec', new Map(
-      [['abc', new Map()], ['arc', new Map()], ['agc', new Map()]]
-    )], 
-    ['length', new Map(
-      [['abc', new Map()], ['arc', new Map()], ['agc', new Map()]]
-    )]]
+function toStatusMapByType(submissions: Submission[]): StatusMapByType {
+  const statusMap: StatusMapByType = new Map(
+    [['exec', new Map()], 
+     ['length', new Map()]]
   )
 
   submissions.forEach((submission) => {
-    const contestType = submission.contest_id.slice(0, 3);
     const problem = submission.problem_id;
     const newExec = submission.execution_time;
     const newLength = submission.length;
 
-    const beforeExec = statusMap.get('exec')?.get(contestType)?.get(problem);
-    const beforeLength = statusMap.get('exec')?.get(contestType)?.get(problem);
+    const prevExec = statusMap.get('exec')?.get(problem);
+    const prevLength = statusMap.get('length')?.get(problem);
 
-    if (beforeExec == undefined || newExec < beforeExec) {
-      statusMap.get('exec')?.get(contestType)?.set(problem, newExec);
+    if (prevExec == undefined || newExec < prevExec) {
+      statusMap.get('exec')?.set(problem, newExec);
     }
-    if (beforeLength == undefined || newLength < beforeLength) {
-      statusMap.get('exec')?.get(contestType)?.set(problem, newLength);
+    if (prevLength == undefined || newLength < prevLength) {
+      statusMap.get('length')?.set(problem, newLength);
     }
   })
 
@@ -114,6 +106,7 @@ function fetchBorder(language: string, type: BorderType) {
   )
 }
 
+// Map problemID: {language: Python3, rankA: xxx, rankB:yyy, rankC: zzz, rankD: xyz, problem_id: abc_154_a}
 function toBorderMap(borders: BorderData[]): Map<string, BorderData> {
   const BorderMap = new Map()
   borders.forEach(border => {
@@ -122,11 +115,61 @@ function toBorderMap(borders: BorderData[]): Map<string, BorderData> {
   return BorderMap
 }
 
+interface SolvedRankStatus {
+  A: number
+  B: number
+  C: number
+  D: number
+  E: number
+  unsolved: number
+}
+
+type ProblemCount = Map<string, number>
+
 
 export const UserPage: React.FC = () => {
-  const [statusMap, setStatusMap] = useState(new Map<StatusType, CodeStatusByContestType>())
+  const [statusMap, setStatusMap] = useState(new Map())
   const [execBorderMap, setExecBorderMap] = useState(new Map<string, BorderData>())
   const [lengthBorderMap, setLengthBorderMap] = useState(new Map<string, BorderData>())
+
+  function getProblemCount(): ProblemCount[] {
+    const abcCount: ProblemCount = new Map();
+    const arcCount: ProblemCount = new Map();
+    const agcCount: ProblemCount = new Map();
+
+    function countUp(count: ProblemCount, problemRank: string) {
+      const preCount = count.get(problemRank) || 0
+      count.set(problemRank, preCount + 1)
+    }
+
+    for (const contestId in execBorderMap) {
+      const contestType = contestId.slice(0, 3);
+      let problemRank = contestId.slice(-1);
+      // AGCにひとつだけF2というRankがあるのでその対応
+      if (problemRank == '2') problemRank = 'F';
+
+      switch (contestType) {
+        case 'abc': countUp(abcCount, problemRank);
+          break;
+        case 'arc': countUp(arcCount, problemRank);
+          break;
+        case 'agc': countUp(agcCount, problemRank);
+          break;
+      }
+    }
+    return [abcCount, arcCount, agcCount];
+  }
+  const [abcCount, arcCount, agcCount] = useMemo(() => getProblemCount(), [])
+
+  function getSolvedRank(status: number, border: BorderData): number {
+    if (status <= border.rank_a) return 5;
+    else if (status <= border.rank_b) return 4;
+    else if (status <= border.rank_c) return 3;
+    else if (status <= border.rank_d) return 2;
+    else return 1;
+  }
+
+  const [abcExecRank, arcExecRank, agcExecRank] = useMemo(() => [1, 2, 3], [])
 
   const userName = 'parsely'
   const language = 'Python3 (3.4.3)'
@@ -135,7 +178,7 @@ export const UserPage: React.FC = () => {
 
   useEffect(() => {
     fetchUserSubmissions(userName, language)
-      .then((apiData) => setStatusMap(toStatusMap(apiData)))
+      .then((apiData) => setStatusMap(toStatusMapByType(apiData)))
   }, [userName, language]);
 
   useEffect(() => {
@@ -146,9 +189,10 @@ export const UserPage: React.FC = () => {
   useEffect(() => {
     fetchBorder(language, 'code_size_status')
       .then((apiData) => setLengthBorderMap(toBorderMap(apiData)))
-  });
+  }, [language]);
 
-  execBorderMap.forEach((value, key) => console.log(`${key}: ${value}`))
+  
+
 
   return (
     <div>
