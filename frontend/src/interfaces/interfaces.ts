@@ -40,3 +40,28 @@ export interface userData {
   totalScore: number;
   averageScore: number;
 }
+
+export interface Submission {
+  id: string;
+  epoch_second: string;
+  problem_id: string;
+  contest_id: string;
+  user_id: string;
+  language: string;
+  poing: number;
+  length: number;
+  result: string;
+  execution_time: number;
+}
+
+export interface BorderData {
+  "language": string
+  "rank_a": number
+  "rank_b": number
+  "rank_c": number
+  "rank_d": number
+  "problem_id": string
+}
+
+export type BorderType = 'exec_time_status' | 'code_size_status';
+
