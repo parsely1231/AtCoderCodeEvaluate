@@ -70,6 +70,65 @@ type RankCountByProblemRank = Map<ProblemRank, RankCount>
 
 type ProblemCount = Map<ProblemRank, number>
 
+function getSolvedRank(status: number, border: BorderData | undefined): number {
+  if (border == undefined) return 5;
+  else if (status <= border.rank_a) return 5;
+  else if (status <= border.rank_b) return 4;
+  else if (status <= border.rank_c) return 3;
+  else if (status <= border.rank_d) return 2;
+  else return 1;
+}
+
+function updateRankCount(rankCount: RankCount | undefined, solvedRank: number) {
+  if (rankCount == undefined) return;
+  rankCount.unsolved -= 1
+  switch (solvedRank) {
+    case 5: rankCount.A += 1;
+      break
+    case 4: rankCount.B += 1;
+      break
+    case 3: rankCount.C += 1;
+      break
+    case 2: rankCount.D += 1;
+      break
+    case 1: rankCount.E += 1;
+      break
+  }
+}
+
+function calculateRankCount(codeStatus: CodeStatusMap, bordeMap: Map<ProblemID, BorderData>, problemCounts: ProblemCount[]) {
+  const abcRankCount: RankCountByProblemRank = new Map();
+  const arcRankCount: RankCountByProblemRank = new Map();
+  const agcRankCount: RankCountByProblemRank = new Map();
+
+  const [abcProblemCount, arcProblemCount, agcProblemCount] = problemCounts;
+
+  abcProblemCount.forEach((count, problemRank) => abcRankCount.set(problemRank, new RankCount(count)))
+  arcProblemCount.forEach((count, problemRank) => arcRankCount.set(problemRank, new RankCount(count)))
+  agcProblemCount.forEach((count, problemRank) => agcRankCount.set(problemRank, new RankCount(count)))
+
+  codeStatus?.forEach((status, problemId) => {
+    const border = bordeMap.get(problemId);
+    const solvedRank = getSolvedRank(status, border);
+    const contestType = problemId.slice(0, 3);
+    let problemRank = problemId.slice(-1);
+    // AGCにひとつだけF2というRankがあるのでその対応
+    if (contestType === 'agc' && problemRank === '2') problemRank = 'f';
+
+    // 初期ABCのみabc001_1のようにproblemIdの末尾が数字になっているのでその対応
+    if (problemRank === '1') problemRank = 'a';
+    else if (problemRank === '2') problemRank = 'b';
+    else if (problemRank === '3') problemRank = 'c';
+    else if (problemRank === '4') problemRank = 'd';
+
+    if (contestType === 'abc') updateRankCount(abcRankCount.get(problemRank), solvedRank);
+    else if (contestType === 'arc') updateRankCount(arcRankCount.get(problemRank), solvedRank);
+    else if (contestType === 'agc') updateRankCount(agcRankCount.get(problemRank), solvedRank);
+
+  })
+  return [abcRankCount, arcRankCount, agcRankCount];
+}
+
 
 export const UserPage: React.FC = () => {
   const [execStatusMap, setExecStatusMap] = useState(new Map<ProblemID, number>())
@@ -112,71 +171,13 @@ export const UserPage: React.FC = () => {
       });
   }, []);
 
-  function getSolvedRank(status: number, border: BorderData | undefined): number {
-    if (border == undefined) return 5;
-    else if (status <= border.rank_a) return 5;
-    else if (status <= border.rank_b) return 4;
-    else if (status <= border.rank_c) return 3;
-    else if (status <= border.rank_d) return 2;
-    else return 1;
-  }
+  const[abcExecRankCount, arcExecRankCount, agcExecRankCount] = useMemo(() => {
+    return calculateRankCount(execStatusMap, execBorderMap, [abcProblemCount, arcProblemCount, agcProblemCount]);
+  }, [execStatusMap, execBorderMap, abcProblemCount])
 
-  function updateRankCount(rankCount: RankCount | undefined, solvedRank: number) {
-    if (rankCount == undefined) return;
-    rankCount.unsolved -= 1
-    switch (solvedRank) {
-      case 5: rankCount.A += 1;
-      case 4: rankCount.B += 1;
-      case 3: rankCount.C += 1;
-      case 2: rankCount.D += 1;
-      case 1: rankCount.E += 1;
-    }
-  }
-
-  function calculateRankCount(codeStatus: CodeStatusMap, bordeMap: Map<ProblemID, BorderData>) {
-    const abcRankCount: RankCountByProblemRank = new Map();
-    const arcRankCount: RankCountByProblemRank = new Map();
-    const agcRankCount: RankCountByProblemRank = new Map();
-
-    abcProblemCount.forEach((count, problemRank) => abcRankCount.set(problemRank, new RankCount(count)))
-    arcProblemCount.forEach((count, problemRank) => arcRankCount.set(problemRank, new RankCount(count)))
-    agcProblemCount.forEach((count, problemRank) => agcRankCount.set(problemRank, new RankCount(count)))
-
-    codeStatus?.forEach((status, problemId) => {
-      const border = bordeMap.get(problemId);
-      const solvedRank = getSolvedRank(status, border);
-      const contestType = problemId.slice(0, 3);
-      let problemRank = problemId.slice(-1);
-      // AGCにひとつだけF2というRankがあるのでその対応
-      if (problemRank === '1') problemRank = 'a';
-      else if (problemRank === '2') problemRank = 'b';
-      else if (problemRank === '3') problemRank = 'c';
-      else if (problemRank === '4') problemRank = 'd';
-
-      if (contestType === 'abc') updateRankCount(abcRankCount.get(problemRank), solvedRank);
-      else if (contestType === 'arc') updateRankCount(arcRankCount.get(problemRank), solvedRank);
-      else if (contestType === 'agc') updateRankCount(agcRankCount.get(problemRank), solvedRank);
-
-    })
-    return [abcRankCount, arcRankCount, agcRankCount];
-  }
-
-  const [abcExecRankCount, arcExecRankCount, agcExecRankCount] = useMemo(() => {
-    return calculateRankCount(execStatusMap, execBorderMap)
-  }, [execStatusMap, execBorderMap])
-
-  const [abcLengthRankCount, arcLengthRankCount, agcLengthRankCount] = useMemo(() => {
-    return calculateRankCount(lengthStatusMap, lengthBorderMap)
-  }, [lengthStatusMap, lengthBorderMap])
-  
-  console.log('StatusMap');
-  console.log(execStatusMap);
-  console.log('BorderMap');
-  console.log(execBorderMap);
-  console.log('ProblemCount')
-  console.log(abcProblemCount);
-  console.log('ExecRankCount');
-  console.log(abcExecRankCount);
+  const[abcLengthRankCount, arcLengthRankCount, agcLengthRankCount] = useMemo(() => {
+    return calculateRankCount(lengthStatusMap, lengthBorderMap, [abcProblemCount, arcProblemCount, agcProblemCount]);
+  }, [lengthStatusMap, lengthBorderMap, abcProblemCount])
 
 
   return (
