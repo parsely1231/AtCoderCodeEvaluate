@@ -36,7 +36,6 @@ export const StatusPieChart: React.FC<PieChartProps> = ({scoredData}) => {
             innerRadius="60%"
             outerRadius="80%"
             fill="#8884d8"
-            label
             paddingAngle={1}
             dataKey="value"
             >

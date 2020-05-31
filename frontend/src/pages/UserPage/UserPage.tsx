@@ -96,19 +96,24 @@ function updateRankCount(rankCount: RankCount | undefined, solvedRank: number) {
   }
 }
 
-function calculateRankCount(codeStatus: CodeStatusMap, bordeMap: Map<ProblemID, BorderData>, problemCounts: ProblemCount[]) {
+function calculateRankCount(
+    codeStatus: CodeStatusMap,
+    borderMap: Map<ProblemID, BorderData>,
+    abcProblemCount: ProblemCount,
+    arcProblemCount: ProblemCount,
+    agcProblemCount: ProblemCount,
+
+  ) {
   const abcRankCount: RankCountByProblemRank = new Map();
   const arcRankCount: RankCountByProblemRank = new Map();
   const agcRankCount: RankCountByProblemRank = new Map();
-
-  const [abcProblemCount, arcProblemCount, agcProblemCount] = problemCounts;
 
   abcProblemCount.forEach((count, problemRank) => abcRankCount.set(problemRank, new RankCount(count)))
   arcProblemCount.forEach((count, problemRank) => arcRankCount.set(problemRank, new RankCount(count)))
   agcProblemCount.forEach((count, problemRank) => agcRankCount.set(problemRank, new RankCount(count)))
 
   codeStatus?.forEach((status, problemId) => {
-    const border = bordeMap.get(problemId);
+    const border = borderMap.get(problemId);
     const solvedRank = getSolvedRank(status, border);
     const contestType = problemId.slice(0, 3);
     let problemRank = problemId.slice(-1);
@@ -133,13 +138,14 @@ function calculateRankCount(codeStatus: CodeStatusMap, bordeMap: Map<ProblemID, 
 export const UserPage: React.FC = () => {
   const [execStatusMap, setExecStatusMap] = useState(new Map<ProblemID, number>())
   const [lengthStatusMap, setLengthStatusMap] = useState(new Map<ProblemID, number>())
+
   const [execBorderMap, setExecBorderMap] = useState(new Map<ProblemID, BorderData>())
   const [lengthBorderMap, setLengthBorderMap] = useState(new Map<ProblemID, BorderData>())
+
   const [abcProblemCount, setAbcProblemCount] = useState(new Map<ProblemRank, number>())
   const [arcProblemCount, setArcProblemCount] = useState(new Map<ProblemRank, number>())
   const [agcProblemCount, setAgcProblemCount] = useState(new Map<ProblemRank, number>())
   
-
   const userName = 'parsely'
   const language = 'Python3 (3.4.3)'
 
@@ -172,19 +178,42 @@ export const UserPage: React.FC = () => {
   }, []);
 
   const[abcExecRankCount, arcExecRankCount, agcExecRankCount] = useMemo(() => {
-    return calculateRankCount(execStatusMap, execBorderMap, [abcProblemCount, arcProblemCount, agcProblemCount]);
-  }, [execStatusMap, execBorderMap, abcProblemCount])
+    return calculateRankCount(execStatusMap, execBorderMap, abcProblemCount, arcProblemCount, agcProblemCount);
+  }, [execStatusMap, execBorderMap, agcProblemCount])
 
   const[abcLengthRankCount, arcLengthRankCount, agcLengthRankCount] = useMemo(() => {
-    return calculateRankCount(lengthStatusMap, lengthBorderMap, [abcProblemCount, arcProblemCount, agcProblemCount]);
-  }, [lengthStatusMap, lengthBorderMap, abcProblemCount])
-
+    return calculateRankCount(lengthStatusMap, lengthBorderMap, abcProblemCount, arcProblemCount, agcProblemCount);
+  }, [lengthStatusMap, lengthBorderMap, agcProblemCount])
 
   return (
     <div>
       <h2>AtCoder Begginer Contest</h2>
       <div className="piecharts-line">
         {Array.from(abcExecRankCount).map(([problemRank, rankCount]) => {
+          return (
+            <div className="piechart-box">
+              <StatusPieChart scoredData={rankCount}/>
+              <h3>Problem {problemRank.toUpperCase()}</h3>
+            </div>
+          )
+        })}
+      </div>
+
+      <h2>AtCoder Regular Contest</h2>
+      <div className="piecharts-line">
+        {Array.from(arcExecRankCount).map(([problemRank, rankCount]) => {
+          return (
+            <div className="piechart-box">
+              <StatusPieChart scoredData={rankCount}/>
+              <h3>Problem {problemRank.toUpperCase()}</h3>
+            </div>
+          )
+        })}
+      </div>
+
+      <h2>AtCoder Grand Contest</h2>
+      <div className="piecharts-line">
+        {Array.from(agcExecRankCount).map(([problemRank, rankCount]) => {
           return (
             <div className="piechart-box">
               <StatusPieChart scoredData={rankCount}/>

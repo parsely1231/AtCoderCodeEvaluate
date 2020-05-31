@@ -14,7 +14,8 @@ function fileterLanguage(language: string) {
 }
 
 function filterNormalContest(submissions: Submission[]) {
-  return submissions.filter(submission => submission.contest_id.slice(0, 3) === 'abc' || 'arc' || 'agc')
+  const normalContestTypes = new Set(['abc', 'arc', 'agc'])
+  return submissions.filter(submission => normalContestTypes.has(submission.contest_id.slice(0, 3)))
 }
 
 

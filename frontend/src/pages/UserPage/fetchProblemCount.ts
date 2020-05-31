@@ -25,8 +25,12 @@ function toProblemCount(problems: Problem[]) {
     const contestType = problemId.slice(0, 3);
     let problemRank = problemId.slice(-1);
 
+    // AGCにひとつだけF2というRankがあるのでその対応
+    if (contestType === 'agc' && problemRank === '2') problemRank = 'f';
+
+    // 初期ABCとARCがabc001_1のようにproblemIdの末尾が数字になっているのでその対応
     if (problemRank === '1') problemRank = 'a';
-    else if (problemRank === '2') {problemRank = 'b';}
+    else if (problemRank === '2') problemRank = 'b';
     else if (problemRank === '3') problemRank = 'c';
     else if (problemRank === '4') problemRank = 'd';
 
