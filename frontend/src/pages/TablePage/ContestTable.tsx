@@ -94,7 +94,7 @@ export const ContestTable: React.FC = () => {
   //   )}
 
   return (
-    <TableContainer>
+    <div className="contest-table-page">
       <div>
         <FormControlLabel
             value="showCodeSize"
@@ -109,12 +109,16 @@ export const ContestTable: React.FC = () => {
             labelPlacement="start"
         />
       </div>
-      <ButtonGroup>
-        <Button variant="contained" onClick={setABC}>ABC</Button>
-        <Button variant="contained" onClick={setARC}>ARC</Button>
-        <Button variant="contained" onClick={setAGC}>AGC</Button>
-      </ButtonGroup>
-        <h2>{getTitle(contestType)}</h2>
+      <div>
+        <ButtonGroup>
+          <Button variant="contained" onClick={setABC}>ABC</Button>
+          <Button variant="contained" onClick={setARC}>ARC</Button>
+          <Button variant="contained" onClick={setAGC}>AGC</Button>
+        </ButtonGroup>
+      </div>
+
+      <h2>{getTitle(contestType)}</h2>
+      <TableContainer>
         <Table>
           <ContestTableHeader contestType={contestType} />
 
@@ -141,8 +145,9 @@ export const ContestTable: React.FC = () => {
               )
             })}
           </TableBody>
-
         </Table>
-    </TableContainer>
+      </TableContainer>
+    </div>
+
   );
 }

@@ -14,6 +14,7 @@ import { RankingTable } from "./components/Ranking"
 import { sampleData } from "./pages/RankingPage/aggregate"
 import { StatusBarChart } from "./components/BarChart"
 import { UserPage } from "./pages/UserPage/UserPage"
+import { InputBox } from "./components/InputBox"
 
 interface IdProps {
   id: string
@@ -36,7 +37,10 @@ const App = () => {
     <Router>
       <NavigationBar/>
       <div className="container">
-        <PageLinks/>
+        <div className="top-menu">
+          <InputBox/>
+          <PageLinks/>
+        </div>
         <Switch>
           <Route
             exact

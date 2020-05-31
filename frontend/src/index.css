@@ -3,67 +3,70 @@
   height: 100%;
 }
 
-.container .MuiButton-contained:focus {
+.contest-table-page .MuiButton-contained:focus {
   background-color: royalblue;
   color: white;
 }
 
-.container .MuiTableRow-root {
+.contest-table-page .MuiTableRow-root {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
 }
 
-.container .MuiTableRow-root .MuiTableCell-root:nth-child(1) {
-  width: 60px;
+.contest-table-page .MuiTable-root {
+  table-layout: fixed;
 }
 
-.container .MuiTableCell-root {
+.contest-table-page .MuiTableCell-root {
   width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.container .difficulty-red {
+.contest-table-page .difficulty-red {
   color: red;
 }
 
-.container .difficulty-orange {
+.contest-table-page .difficulty-orange {
   color: orange;
 }
 
-.container .difficulty-yellow {
+.contest-table-page .difficulty-yellow {
   color: yellow;
 }
 
-.container .difficulty-blue {
+.contest-table-page .difficulty-blue {
   color: blue;
 }
 
-.container .difficulty-cyan {
+.contest-table-page .difficulty-cyan {
   color: cyan;
 }
 
-.container .difficulty-green {
+.contest-table-page .difficulty-green {
   color: green;
 }
 
-.container .difficulty-brown {
+.contest-table-page .difficulty-brown {
   color: brown;
 }
 
-.container .difficulty-gray {
+.contest-table-page .difficulty-gray {
   color: gray;
 }
 
-.container a {
+.contest-table-page a {
   color: cornflowerblue;
   text-decoration: none;
 }
 
-.container a:hover {
+.contest-table-page a:hover {
   color: royalblue;
 }
 
-.container .length-square {
+.contest-table-page .length-square {
   display: inline-block;
   border-radius: 20%;
   border-style: solid;
@@ -73,7 +76,7 @@
   width: 10px;
 }
 
-.container .exectime-circle {
+.contest-table-page .exectime-circle {
   display: inline-block;
   border-radius: 50%;
   border-style: solid;
@@ -83,7 +86,7 @@
   width: 10px;
 }
 
-.container .table {
+.contest-table-page .table {
   background-color: rosybrown;
 }
 
@@ -126,5 +129,24 @@
 
 .piechart-box h3 {
   margin-top: 0;
+}
+
+.top-menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.input-box {
+  display: inline-block;
+}
+
+.page-links {
+  display: inline-block;
 }
 /*# sourceMappingURL=index.css.map */

@@ -1,7 +1,9 @@
 .container {
   padding: 70px 20px 20px 20px;
   height: 100%;
+}
 
+.contest-table-page {
   & .MuiButton-contained:focus {
     background-color: royalblue;
     color: white;
@@ -9,15 +11,17 @@
 
   & .MuiTableRow-root {
     display: flex;
+  }
 
-    & .MuiTableCell-root:nth-child(1) {
-      width: 60px;
-    }
-
+  & .MuiTable-root {
+    table-layout: fixed;
   }
 
   & .MuiTableCell-root {
     width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   & .difficulty {
@@ -86,6 +90,7 @@
   }
 }
 
+
 .nav-button {
   & span {
     color: white;
@@ -119,4 +124,19 @@
   & h3 {
     margin-top: 0;
   }
+}
+
+.top-menu {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.input-box {
+  display: inline-block;
+}
+
+.page-links {
+  display: inline-block;
 }
