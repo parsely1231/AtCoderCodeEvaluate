@@ -1,4 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
+import AppBar from '@material-ui/core/AppBar';
+import Paper from '@material-ui/core/Paper';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+
 
 import { StatusBarChart } from "../../components/BarChart";
 import { StatusPieChart } from "../../components/StatusPieChart";
@@ -134,6 +139,30 @@ function calculateRankCount(
   return [abcRankCount, arcRankCount, agcRankCount];
 }
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  myType: string;
+  selectedType: string;
+}
+
+
+function TabPanel(props: TabPanelProps) {
+  const { children, selectedType, myType} = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={selectedType !== myType}
+    >
+      {selectedType === myType && (
+        <div>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export const UserPage: React.FC = () => {
   const [execStatusMap, setExecStatusMap] = useState(new Map<ProblemID, number>())
@@ -184,44 +213,105 @@ export const UserPage: React.FC = () => {
   const[abcLengthRankCount, arcLengthRankCount, agcLengthRankCount] = useMemo(() => {
     return calculateRankCount(lengthStatusMap, lengthBorderMap, abcProblemCount, arcProblemCount, agcProblemCount);
   }, [lengthStatusMap, lengthBorderMap, agcProblemCount])
+  
+  const [statusType, setStatusType] = useState('Execution Time')
+
+  const handleChangeStatusType = (event: React.ChangeEvent<{}>, newValue: string) => {
+    setStatusType(newValue);
+  };
 
   return (
+    
     <div>
-      <h2>AtCoder Begginer Contest</h2>
-      <div className="piecharts-line">
-        {Array.from(abcExecRankCount).map(([problemRank, rankCount]) => {
-          return (
-            <div className="piechart-box">
-              <StatusPieChart scoredData={rankCount}/>
-              <h3>Problem {problemRank.toUpperCase()}</h3>
-            </div>
-          )
-        })}
-      </div>
+      <Paper square>
+        <Tabs
+          value={statusType}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleChangeStatusType}
+        >
+          <Tab label="Execution Time" value="Execution Time" />
+          <Tab label="Code Length" value="Code Length" />
+        </Tabs>
+      </Paper>
+      <TabPanel myType="Execution Time" selectedType={statusType}>
+        <h1>Execution Time</h1>
+        <h2>AtCoder Begginer Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(abcExecRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
 
-      <h2>AtCoder Regular Contest</h2>
-      <div className="piecharts-line">
-        {Array.from(arcExecRankCount).map(([problemRank, rankCount]) => {
-          return (
-            <div className="piechart-box">
-              <StatusPieChart scoredData={rankCount}/>
-              <h3>Problem {problemRank.toUpperCase()}</h3>
-            </div>
-          )
-        })}
-      </div>
+        <h2>AtCoder Regular Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(arcExecRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
 
-      <h2>AtCoder Grand Contest</h2>
-      <div className="piecharts-line">
-        {Array.from(agcExecRankCount).map(([problemRank, rankCount]) => {
-          return (
-            <div className="piechart-box">
-              <StatusPieChart scoredData={rankCount}/>
-              <h3>Problem {problemRank.toUpperCase()}</h3>
-            </div>
-          )
-        })}
-      </div>
+        <h2>AtCoder Grand Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(agcExecRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
+      </TabPanel>
+
+      <TabPanel myType="Code Length" selectedType={statusType}>
+        <h1>Code Length</h1>
+        <h2>AtCoder Begginer Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(abcLengthRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
+
+        <h2>AtCoder Regular Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(arcLengthRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
+
+        <h2>AtCoder Grand Contest</h2>
+        <div className="piecharts-line">
+          {Array.from(agcLengthRankCount).map(([problemRank, rankCount]) => {
+            return (
+              <div className="piechart-box">
+                <StatusPieChart scoredData={rankCount}/>
+                <h3>Problem {problemRank.toUpperCase()}</h3>
+              </div>
+            )
+          })}
+        </div>
+      </TabPanel>
+
     </div>
 
   )

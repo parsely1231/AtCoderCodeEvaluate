@@ -112,7 +112,9 @@
 
 .piechart-box {
   text-align: center;
-  flex: 0 0 16.66%;
+  flex: 1 1 16.66%;
+  max-width: 16.66%;
+  min-width: 100px;
 
   & h3 {
     margin-top: 0;
