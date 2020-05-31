@@ -5,13 +5,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 
 import { useLocalStorage } from "../utils/useLocalStrage"
+import { languageList } from "../utils/languageList"
 
 
 
 export const InputBox: React.FC = () => {
   const [userName, setUserName] = useLocalStorage("userName", "");
-  const [language, setLanguage] = useLocalStorage('language', "");
-  const languages = ["a", "b"];
+  const [language, setLanguage] = useLocalStorage('language', "C++14 (GCC 5.4.1)");
+  const languages = languageList;
 
   const handleChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(event.target.value);
