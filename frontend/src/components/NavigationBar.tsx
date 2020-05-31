@@ -3,10 +3,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-
-import Zoom from '@material-ui/core/Zoom';
+import {Link, Zoom, CssBaseline, useScrollTrigger} from '@material-ui/core'
 
 import { MyLinksMenu } from "./MyLinksMenu"
 import { RankingsMenu } from "./RankingsMenu"

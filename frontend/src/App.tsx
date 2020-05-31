@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import { NavigationBar } from "./components/NavigationBar"
+import { PageLinks } from "./components/PageLinks"
 import { ContestTable } from "./pages/TablePage/ContestTable"
 import { RankingTable } from "./components/Ranking"
 import { sampleData } from "./pages/RankingPage/aggregate"
@@ -35,43 +36,41 @@ const App = () => {
     <Router>
       <NavigationBar/>
       <div className="container">
-          <Link to="/table">Table</Link>
-          <Link to="/">Home</Link>
-          <Link to="/user">User</Link>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              component={() => (
-                <div>AtCoder XXXXXXXXX
-                  <p>root page</p>
-                </div>
-              )}
-            />
-            <Route path="/table">
-              <ContestTable />
-            </Route>
+        <PageLinks/>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            component={() => (
+              <div>AtCoder XXXXXXXXX
+                <p>root page</p>
+              </div>
+            )}
+          />
+          <Route path="/table">
+            <ContestTable />
+          </Route>
 
-            <Route path="/user">
-              <UserPage/>
-            </Route>
+          <Route path="/user">
+            <UserPage/>
+          </Route>
 
-            <Route exact path="/ranking/exectime">
-              <RankingTable title={'Total'} ranking={sampleData} />
-              <StatusBarChart/>
-            </Route>
+          <Route exact path="/ranking/exectime">
+            <RankingTable title={'Total'} ranking={sampleData} />
+            <StatusBarChart/>
+          </Route>
 
-            <Route
-              path="/abc/:id"
-              render={({ match }) => {
-                const id:string = match.params.id
-                return (
-                  <IdPage id={id} />
-                );
-              }}
-            />
-            <Redirect path="/arc" to="/" />
-          </Switch>
+          <Route
+            path="/abc/:id"
+            render={({ match }) => {
+              const id:string = match.params.id
+              return (
+                <IdPage id={id} />
+              );
+            }}
+          />
+          <Redirect path="/arc" to="/" />
+        </Switch>
       </div>
     </Router>
   );
