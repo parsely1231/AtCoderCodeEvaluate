@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  PieChart, Pie, Cell, Tooltip,
+  PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
 
@@ -18,34 +18,34 @@ interface PieChartProps {
 }
 
 export const StatusPieChart: React.FC<PieChartProps> = ({scoredData}) => {
-  // gray, brown, green, blue, yellow, red
-  const COLORS = ["#808080", "#804000", "#008000", "#0000FF", "#C0C000", "#FF0000"];
+  // red, yellow, bluem green, brown, gray
+  const COLORS = ["#FF0000","#C0C000","#0000FF","#008000", "#804000", "#808080"];
   const data = [
-    { name: 'unsolved', value: scoredData.unsolved },
-    { name: 'E', value: scoredData.E },
-    { name: 'D', value: scoredData.D },
-    { name: 'C', value: scoredData.C },
+    { name: "A", value: scoredData.A },
     { name: 'B', value: scoredData.B },
-    { name: "A", value: scoredData.A }
+    { name: 'C', value: scoredData.C },
+    { name: 'D', value: scoredData.D },
+    { name: 'E', value: scoredData.E },
+    { name: 'unsolved', value: scoredData.unsolved },
   ]
   return (
-    <PieChart width={800} height={400}>
-      <Pie
-        data={data}
-        cx={120}
-        cy={200}
-        innerRadius={60}
-        outerRadius={80}
-        fill="#8884d8"
-        label
-        paddingAngle={1}
-        dataKey="value"
-      >
-        {
-          data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
-        }
-      </Pie>
-      <Tooltip />
-    </PieChart>
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart>
+          <Pie
+            data={data}
+            innerRadius="60%"
+            outerRadius="80%"
+            fill="#8884d8"
+            label
+            paddingAngle={1}
+            dataKey="value"
+            >
+            {
+              data.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
+            }
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
   );
 }

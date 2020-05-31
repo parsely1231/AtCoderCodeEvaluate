@@ -182,8 +182,17 @@ export const UserPage: React.FC = () => {
 
   return (
     <div>
-      {/*<StatusPieChart/>*/}
-      <StatusBarChart/>
+      <h2>AtCoder Begginer Contest</h2>
+      <div className="piecharts-line">
+        {Array.from(abcExecRankCount).map(([problemRank, rankCount]) => {
+          return (
+            <div className="piechart-box">
+              <StatusPieChart scoredData={rankCount}/>
+              <h3>Problem {problemRank.toUpperCase()}</h3>
+            </div>
+          )
+        })}
+      </div>
     </div>
 
   )

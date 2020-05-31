@@ -101,3 +101,20 @@
   text-align: center;
   padding-top: 10px;
 }
+
+.piecharts-line {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.piechart-box {
+  text-align: center;
+  flex: 0 0 16.66%;
+
+  & h3 {
+    margin-top: 0;
+  }
+}
