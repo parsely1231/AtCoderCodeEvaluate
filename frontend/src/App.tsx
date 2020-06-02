@@ -35,12 +35,11 @@ console.log('APP page')
 const App = () => {
   return (
     <Router>
-      <NavigationBar/>
+      <div className="header-container">
+        <NavigationBar/>
+      </div>
+
       <div className="container">
-        <div className="top-menu">
-          <InputBox/>
-          <PageLinks/>
-        </div>
         <Switch>
           <Route
             exact

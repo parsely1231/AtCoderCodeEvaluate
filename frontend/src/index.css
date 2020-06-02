@@ -1,5 +1,5 @@
 .container {
-  padding: 70px 20px 20px 20px;
+  padding: 150px 20px 20px 20px;
   height: 100%;
 }
 
@@ -138,16 +138,18 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  margin-top: 10px;
-  margin-bottom: 30px;
-}
-
-.input-box {
-  display: inline-block;
+  background-color: aliceblue;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  padding: 8px 20px;
 }
 
 .page-links {
   display: inline-block;
-  padding: 0 0 10px 15px;
+  padding: 10px 0 0 15px;
+}
+
+.MuiFormControl-root {
+  max-width: 40%;
 }
 /*# sourceMappingURL=index.css.map */

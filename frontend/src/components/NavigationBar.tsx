@@ -7,15 +7,9 @@ import {Link, Zoom, CssBaseline, useScrollTrigger} from '@material-ui/core'
 
 import { MyLinksMenu } from "./MyLinksMenu"
 import { RankingsMenu } from "./RankingsMenu"
+import { InputBox } from "./InputBox"
+import { PageLinks } from "./PageLinks"
 
-interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window?: () => Window;
-  children: React.ReactElement[];
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,15 +55,19 @@ const ScrollTop: React.FC<ScrollTopProps> = ({window}) => {
 }
 
 export const NavigationBar: React.FC = () => {
+  const win = window
   return (
     <div>
-      <CssBaseline />
       <AppBar id="back-to-top-anchor">
         <Toolbar>
           <Typography variant="h6">AtCoder Code Evaluate</Typography>
           <RankingsMenu/>
           <MyLinksMenu/>
         </Toolbar>
+        <div className="top-menu">
+          <InputBox/>
+          <PageLinks/>
+        </div>
       </AppBar>
     </div>
   );
