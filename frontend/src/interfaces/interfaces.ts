@@ -24,16 +24,18 @@ export interface AggregatedData {
   data: EntryData[]
 }
 
-export interface RankingEntry {
-  readonly rank: number;
-  readonly userId: string;
-  readonly score: number;
+export type RankingEntry = {
+  user_name: string,
+  language: string,
+  ac_count: number,
+  code_size_points: number,
+  exec_time_points: number,
+  code_size_average?: number,
+  exec_time_average?: number,
 }
 
-export interface RankingProps {
-  title: string;
-  ranking: RankingEntry[];
-}
+export type RankingOrderBy = keyof RankingEntry
+
 
 export interface userData {
   userId: string;

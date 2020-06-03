@@ -1,18 +1,8 @@
-import {} from "../interfaces/interfaces"
+import { RankingEntry } from "../interfaces/interfaces"
 
 
 
 const API_BASE_URL = '/api';
-
-type RankingEntry = {
-  user_name: string,
-  language: string,
-  ac_count: number,
-  code_size_points: number,
-  exec_time_points: number,
-  code_size_average?: number,
-  exec_time_average?: number,
-}
 
 
 function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntry>[] {
@@ -29,9 +19,9 @@ function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntr
 
 async function fetchRankings(language: string): Promise<RankingEntry[]> {
   const url = `${API_BASE_URL}/user_status/?language=${language}`
-  
-  return fetch(url)
-          .then(res => res.json())
+  const res = await fetch(url);
+  const json = await res.json()
+  return json
 }
 
 
