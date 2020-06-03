@@ -10,11 +10,9 @@ import {
 import { NavigationBar } from "./components/NavigationBar"
 import { PageLinks } from "./components/PageLinks"
 import { ContestTable } from "./pages/TablePage/ContestTable"
-import { RankingTable } from "./components/Ranking"
-import { sampleData } from "./pages/RankingPage/aggregate"
 import { StatusBarChart } from "./components/BarChart"
 import { UserPage } from "./pages/UserPage/UserPage"
-import { InputBox } from "./components/InputBox"
+import { RankingPage } from "./pages/RankingPage/index"
 
 interface IdProps {
   id: string
@@ -59,8 +57,10 @@ const App = () => {
           </Route>
 
           <Route exact path="/ranking/exectime">
-            <RankingTable title={'Total'} ranking={sampleData} />
-            <StatusBarChart/>
+            <RankingPage
+              userId={"parsely"}
+              language="Python3 (3.4.3)"
+            />
           </Route>
 
           <Route

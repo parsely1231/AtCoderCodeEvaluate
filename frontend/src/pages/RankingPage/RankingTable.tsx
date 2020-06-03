@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { 
   Table, TableBody, TableCell,
   TableContainer, TableHead, TablePagination, TableRow, Paper } from "@material-ui/core";
@@ -8,6 +8,7 @@ import { RankingEntry, RankingOrderBy } from "../../interfaces/interfaces"
 
 
 type RankingTableProps = {
+  userId: string,
   language: string,
   rankingEntries: Required<RankingEntry>[],
   acFilter: number,
@@ -22,7 +23,7 @@ type RankingRowProps = {
 }
 
 
-export const RankingTable: React.FC<RankingTableProps> = ({ language, rankingEntries, acFilter, orderBy }) => {
+export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, rankingEntries, acFilter, orderBy }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -37,14 +38,18 @@ export const RankingTable: React.FC<RankingTableProps> = ({ language, rankingEnt
 
   const title: string = orderBy.toString().split("_").join(" ");
 
-  const filteredEntries = rankingEntries.filter((entry) => entry.ac_count >= acFilter)
-  // Desc Sort
-  filteredEntries.sort((a, b) => {
-    if (a[orderBy] > b[orderBy]) return -1
-    else return 1
-  })
+  const sortedFilteredEntries = useMemo(() => {
+    const filterdEntries = rankingEntries.filter((entry) => entry.ac_count >= acFilter);
+    filterdEntries.sort((a, b) => {
+      // Desc Sort
+      if (a[orderBy] > b[orderBy]) return -1
+      else return 1
+    })
+    return rankingEntries.filter((entry) => entry.ac_count >= acFilter);
+  }, [rankingEntries, acFilter, orderBy])
 
-  const orderedRanking = filteredEntries.reduce((ranking, entry, index) => {
+  const orderedRanking = useMemo(() => {
+    return sortedFilteredEntries.reduce((ranking, entry, index) => {
       const last = ranking.length === 0 ? undefined : ranking[ranking.length - 1];
       const nextEntry =
         last && last.score === entry[orderBy]
@@ -61,10 +66,15 @@ export const RankingTable: React.FC<RankingTableProps> = ({ language, rankingEnt
       ranking.push(nextEntry);
       return ranking;
     }, [] as RankingRowProps[]);
+  }, [rankingEntries, acFilter, orderBy])
+
+    let yourRank: number | string = orderedRanking.findIndex(entry => entry.userId === userId) + 1
+    if (yourRank === 0) yourRank = "No Entry"
 
   return (
       <Paper className="ranking-table">
-        <div className={"ranking-title"}>Ranking {language} {title}</div>
+        <div className="ranking-title">Ranking {language} {title}</div>
+        <div className="ranking-you">Your Rank is {yourRank} / {orderedRanking.length}</div>
         <TableContainer>
           <Table>
             <TableHead>
@@ -75,7 +85,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({ language, rankingEnt
               </TableRow>
             </TableHead>
             <TableBody>
-              {orderedRanking.map(({ rank, userId, score }, index) => {
+              {orderedRanking.slice(page*rowsPerPage, (page+1)*rowsPerPage).map(({ rank, userId, score }, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{rank}</TableCell>

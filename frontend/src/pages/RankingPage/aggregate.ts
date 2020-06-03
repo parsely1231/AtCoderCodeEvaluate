@@ -1,7 +1,6 @@
 import React from "react"
 
-import { RankingTable, aggregatedToRanking } from "../../components/Ranking"
-import { EntryData, AggregatedData, RankingEntry, RankingProps } from "../../interfaces/interfaces"
+
 
 
 interface userData {
@@ -29,27 +28,26 @@ const sample3: userData = {
 }
 
 
-const samples = [sample1, sample2, sample3]
+// const samples = [sample1, sample2, sample3]
 
-const aggregate = (userDatas: userData[], target: "total" | "average"): AggregatedData => {
-  const aggregatedData = userDatas.map((userData) => {
-      const score = target == 'total'
-        ? userData.totalScore
-        : userData.averageScore
+// const aggregate = (userDatas: userData[], target: "total" | "average"): AggregatedData => {
+//   const aggregatedData = userDatas.map((userData) => {
+//       const score = target == 'total'
+//         ? userData.totalScore
+//         : userData.averageScore
 
-      return {
-        userId: userData.userId,
-        score: score
-      };
-    })
+//       return {
+//         userId: userData.userId,
+//         score: score
+//       };
+//     })
   
-    return {
-      title: target,
-      data: aggregatedData
-    }
+//     return {
+//       title: target,
+//       data: aggregatedData
+//     }
 
-}
+// }
 
-export const sampleData = aggregatedToRanking( aggregate(samples, 'total') )
 
 

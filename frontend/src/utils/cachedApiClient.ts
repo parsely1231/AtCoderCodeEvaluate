@@ -17,7 +17,7 @@ function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntr
 }
 
 
-async function fetchRankings(language: string): Promise<RankingEntry[]> {
+async function fetchRanking(language: string): Promise<RankingEntry[]> {
   const url = `${API_BASE_URL}/user_status/?language=${language}`
   const res = await fetch(url);
   const json = await res.json()
@@ -25,11 +25,13 @@ async function fetchRankings(language: string): Promise<RankingEntry[]> {
 }
 
 
-let RANKINGS: Promise<Required<RankingEntry>[]> | undefined;
+let RANKINGS_MAP = new Map<string, Promise<Required<RankingEntry>[]>>();
 export const cachedRankings = (language: string): Promise<Required<RankingEntry>[]> => {
-  if (RANKINGS === undefined) {
-    RANKINGS = fetchRankings(language)
-                .then((res) => calcuAverageScore(res));
-  }
-  return RANKINGS;
+  const cache = RANKINGS_MAP.get(language)
+  if (cache) return cache;
+  
+  const ranking = fetchRanking(language).then((json) => calcuAverageScore(json))
+  RANKINGS_MAP.set(language, ranking)
+
+  return ranking;
 }
