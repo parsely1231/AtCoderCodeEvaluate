@@ -1,12 +1,14 @@
-import { RankingEntry, ContestsWithProblems, Problem, BorderData, BorderType } from "../interfaces/interfaces"
+import { RankingEntry, ContestsWithProblems, Problem, BorderData, BorderType, Submission } from "../interfaces/interfaces"
 
 
 
 const API_BASE_URL = '/api';
 const PROBLEMS_URL = "/atcoder/resources/problems.json";
+const SUBMISSION_URL = "/atcoder/atcoder-api";
 
 
-// *************** Fetch Ranking ***************
+// ***************** Fetch Ranking *****************
+
 function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntry>[] {
   const calcuedEntries = rankingEntries.map((entry): Required<RankingEntry> => {
     const averages = {
@@ -38,7 +40,8 @@ export const cachedRankings = (language: string): Promise<Required<RankingEntry>
 }
 
 
-// *************** Fetch Contests and Problems ***************
+// ***************** Fetch Contests and Problems *****************
+
 function pushProblemToContestDict (contestDict:ContestsWithProblems, problem:Problem) {
   const contestId: string = problem.contest_id;
   if (contestDict.get(contestId) === undefined) contestDict.set(contestId, []);
@@ -66,7 +69,7 @@ export const cachedContestsWithProblmes = () => {
 }
 
 
-// *************** Fetch Border ***************
+// ***************** Fetch Border *****************
 
 // Map problemId: {language: Python3, rankA: xxx, rankB:yyy, rankC: zzz, rankD: xyz, problem_id: abc_154_a}
 function toBorderMap(borders: BorderData[]): Map<string, BorderData> {
@@ -108,3 +111,34 @@ export const cachedLengthBorder = (language: string) => {
   return LENGTH_BORDER.get(language)!
 }
 
+
+// ***************** Fetch Submission *****************
+
+function filterAC(submissions: Submission[]) {
+  return submissions.filter(submission => submission.result === 'AC');
+}
+
+function filterNormalContest(submissions: Submission[]) {
+  const normalContestTypes = new Set(['abc', 'arc', 'agc'])
+  return submissions.filter(submission => normalContestTypes.has(submission.contest_id.slice(0, 3)))
+}
+
+async function fetchUserSubmissions(userId: string): Promise<Submission[]> {
+  const url = `${SUBMISSION_URL}/results?user=${userId}`;
+  const res = await fetch(url);
+  const submissions: Submission[] = await res.json()
+  const acSubmissions = filterAC(submissions)
+  const acSubmissionsToNormalContest = filterNormalContest(acSubmissions)
+
+  return acSubmissionsToNormalContest
+}
+
+let USER_SUBMISSIONS = new Map<string, Promise<Submission[]>>()
+
+export const cachedUserSubmissions = (userId: string) => {
+  if (USER_SUBMISSIONS.get(userId) === undefined) {
+    const submissions = fetchUserSubmissions(userId)
+    USER_SUBMISSIONS.set(userId, submissions)
+  }
+  return USER_SUBMISSIONS.get(userId)!
+}
