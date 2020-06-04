@@ -1,4 +1,4 @@
-import { RankingEntry, ContestsWithProblems, Problem } from "../interfaces/interfaces"
+import { RankingEntry, ContestsWithProblems, Problem, BorderData, BorderType } from "../interfaces/interfaces"
 
 
 
@@ -18,7 +18,6 @@ function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntr
   return calcuedEntries
 }
 
-
 async function fetchRanking(language: string): Promise<RankingEntry[]> {
   const url = `${API_BASE_URL}/user_status/?language=${language}`
   const res = await fetch(url);
@@ -26,8 +25,8 @@ async function fetchRanking(language: string): Promise<RankingEntry[]> {
   return json
 }
 
-
 let RANKINGS_MAP = new Map<string, Promise<Required<RankingEntry>[]>>();
+
 export const cachedRankings = (language: string): Promise<Required<RankingEntry>[]> => {
   const cache = RANKINGS_MAP.get(language)
   if (cache) return cache;
@@ -37,7 +36,6 @@ export const cachedRankings = (language: string): Promise<Required<RankingEntry>
 
   return ranking;
 }
-
 
 
 // *************** Fetch Contests and Problems ***************
@@ -59,9 +57,54 @@ async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
 }
 
 let CONTESTS_WITH_PROBLEMS: undefined | Promise<ContestsWithProblems>
+
 export const cachedContestsWithProblmes = () => {
   if (CONTESTS_WITH_PROBLEMS === undefined) {
     CONTESTS_WITH_PROBLEMS = fetchContestsWithProblems()
   }
   return CONTESTS_WITH_PROBLEMS;
 }
+
+
+// *************** Fetch Border ***************
+
+// Map problemId: {language: Python3, rankA: xxx, rankB:yyy, rankC: zzz, rankD: xyz, problem_id: abc_154_a}
+function toBorderMap(borders: BorderData[]): Map<string, BorderData> {
+  const BorderMap = new Map<string, BorderData>()
+  borders.forEach(border => {
+    BorderMap.set(border.problem_id, border)
+  })
+  return BorderMap
+}
+
+async function fetchBorder(language: string, type: BorderType): Promise<Map<string, BorderData>> {
+  const url = `${API_BASE_URL}/${type}/?language=${language}`
+  const normalContestTypes = new Set(['abc', 'arc', 'agc'])
+  const res = await fetch(url)
+  const borders: BorderData[] = await res.json()
+  const normalFilteredBorders = borders.filter(border => normalContestTypes.has(border.problem_id.slice(0, 3)))
+  const borderMap = toBorderMap(normalFilteredBorders)
+  return borderMap
+}
+
+// Map language: {proglemId: {language: Python3, rankA: xxx, rankB:yyy, rankC: zzz, rankD: xyz, problem_id: abc_154_a}}
+let EXEC_BORDER = new Map<string, Promise<Map<string, BorderData>>>()
+
+export const cachedExecBorder = (language: string) => {
+  if (EXEC_BORDER.get(language) === undefined) {
+    const borderMap = fetchBorder(language, "exec_time_status")
+    EXEC_BORDER.set(language, borderMap)
+  }
+  return EXEC_BORDER.get(language)!
+}
+
+let LENGTH_BORDER = new Map<string, Promise<Map<string, BorderData>>>()
+
+export const cachedLengthBorder = (language: string) => {
+  if (LENGTH_BORDER.get(language) === undefined) {
+    const borderMap = fetchBorder(language, "code_size_status")
+    LENGTH_BORDER.set(language, borderMap)
+  }
+  return LENGTH_BORDER.get(language)!
+}
+
