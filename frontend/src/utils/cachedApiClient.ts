@@ -1,10 +1,12 @@
-import { RankingEntry } from "../interfaces/interfaces"
+import { RankingEntry, ContestsWithProblems, Problem } from "../interfaces/interfaces"
 
 
 
 const API_BASE_URL = '/api';
+const PROBLEMS_URL = "/atcoder/resources/problems.json";
 
 
+// *************** Fetch Ranking ***************
 function calcuAverageScore(rankingEntries: RankingEntry[]): Required<RankingEntry>[] {
   const calcuedEntries = rankingEntries.map((entry): Required<RankingEntry> => {
     const averages = {
@@ -34,4 +36,32 @@ export const cachedRankings = (language: string): Promise<Required<RankingEntry>
   RANKINGS_MAP.set(language, ranking)
 
   return ranking;
+}
+
+
+
+// *************** Fetch Contests and Problems ***************
+function pushProblemToContestDict (contestDict:ContestsWithProblems, problem:Problem) {
+  const contestId: string = problem.contest_id;
+  if (contestDict.get(contestId) === undefined) contestDict.set(contestId, []);
+  contestDict.get(contestId)?.push(problem);
+}
+
+async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
+  const res = await fetch(PROBLEMS_URL);
+  const problemsJson: Problem[] = await res.json();
+  const contestDict: ContestsWithProblems = problemsJson.reduce((dict, problem) => {
+    pushProblemToContestDict(dict, problem);
+    return dict;
+  }, new Map() as ContestsWithProblems)
+
+  return contestDict
+}
+
+let CONTESTS_WITH_PROBLEMS: undefined | Promise<ContestsWithProblems>
+export const cachedContestsWithProblmes = () => {
+  if (CONTESTS_WITH_PROBLEMS === undefined) {
+    CONTESTS_WITH_PROBLEMS = fetchContestsWithProblems()
+  }
+  return CONTESTS_WITH_PROBLEMS;
 }

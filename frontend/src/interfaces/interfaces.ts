@@ -12,7 +12,7 @@ export interface Contest {
 }
 
 type ContestId = string
-export type ContestsData = Map<ContestId, Problem[]>
+export type ContestsWithProblems = Map<ContestId, Problem[]>
 
 export interface EntryData {
   userId: string;
