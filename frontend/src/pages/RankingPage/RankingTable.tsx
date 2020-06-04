@@ -68,8 +68,10 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
     }, [] as RankingRowProps[]);
   }, [rankingEntries, acFilter, orderBy])
 
-    let yourRank: number | string = orderedRanking.findIndex(entry => entry.userId === userId) + 1
-    if (yourRank === 0) yourRank = "No Entry"
+    let yourIndex: number | string = orderedRanking.findIndex(entry => entry.userId === userId)
+    const yourRank = yourIndex === -1 
+      ? "No Entry" 
+      : orderedRanking[yourIndex].rank
 
   return (
       <Paper className="ranking-table">
