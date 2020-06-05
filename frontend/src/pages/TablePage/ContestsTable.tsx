@@ -2,85 +2,77 @@ import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "
 import { Button, ButtonGroup ,Checkbox, FormControlLabel, Table, TableBody, TableContainer } from "@material-ui/core"
 // import { FixedSizeList } from "react-window"
 
-import { ContestsWithProblems, Contest, BorderData } from "../../interfaces/interfaces"
+import { ContestsWithProblems, Contest, BorderData, ContestType } from "../../interfaces/interfaces"
 
-import { fetchContest } from "./fetchContest";
 
 import { ContestLine } from "./ContestLine"
 import { ContestTableHeader } from "./ContestTableHeader"
 
 
 type TableProps = {
+  contestType: ContestType,
   contests: Contest[],
-  execBorder: Map<string, BorderData>
-  lengthBorder: Map<string, BorderData>
+  execBorderMap: Map<string, BorderData>,
+  lengthBorderMap: Map<string, BorderData>,
+  execStatusMap: Map<string, number>,
+  lengthStatusMap: Map<string, number>,
+  showExecTime: boolean,
+  showCodeSize: boolean,
+}
+
+function getTitle(contestType: ContestType): string {
+  switch (contestType) {
+    case "ABC": return "AtCoder Begginer Contest";
+    case "ARC": return "AtCoder Regular Contest";
+    case "AGC": return "AtCoder Grand Contest";
+  }
 }
 
 
-export const ContestTable: React.FC<TableProps> = ({contests, execBorder, lengthBorder, }) => {
+function quantile(sortedArray: number[], percentile: number) {
+  const index = percentile/100. * (sortedArray.length-1);
+  if (Math.floor(index) == index) return sortedArray[index];
+
+  const i = Math.floor(index)
+  const fraction = index - i;
+  const result = sortedArray[i] + (sortedArray[i+1] - sortedArray[i]) * fraction;
+  return result;
+}
+
+function quantiles(sortedArray: number[], percentiles: number[]) {
+  return percentiles.map((percentile) => quantile(sortedArray, percentile))
+}
 
 
-  const selectedContests = contestDataByType.get(contestType);
-  // const length = selectedContests? selectedContests.length : 0
-  // const Line = ({ index, style }: {index: number, style:any}) => {
-  //   const contest = selectedContests? selectedContests[index] : null;
-  //   if (contest == null) return null;
-  //   return (
-  //     <ContestLine
-  //       key={contest.contestId}
-  //       contestId={contest.contestId}
-  //       problems={contest.problems}
-  //       showCodeSize={showCodeSize}
-  //       showExecTime={showExecTime}
-  //     />
-  //   )}
+export const ContestTable: React.FC<TableProps> = 
+({contestType, contests, execBorderMap, lengthBorderMap, execStatusMap, lengthStatusMap, showCodeSize, showExecTime}) => {
+
+  const title = getTitle(contestType);
+  const baseProblemCount: number = contestType === "ABC" ? 6
+                                  :contestType ==='ARC' ? 4
+                                  : 7;
+  
+  const lengthBorderMedianList = [...lengthBorderMap.values()].map(border => border.rank_c)
+  lengthBorderMedianList.sort().reverse()
+  const lengthBorderQuantiles = quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100])
+  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[-1]) / 8)
 
   return (
-    <div className="contest-table-page">
-      <div>
-        <FormControlLabel
-            value="showCodeSize"
-            control={<Checkbox color="primary" checked={showCodeSize} onChange={handleShowCodeSize}/>}
-            label="ShowCodeSize"
-            labelPlacement="start"
-        />
-        <FormControlLabel
-            value="showExecTime"
-            control={<Checkbox color="primary" checked={showExecTime} onChange={handleShowExecTime}/>}
-            label="ShowExecTime"
-            labelPlacement="start"
-        />
-      </div>
-      <div>
-        <ButtonGroup>
-          <Button variant="contained" onClick={setABC}>ABC</Button>
-          <Button variant="contained" onClick={setARC}>ARC</Button>
-          <Button variant="contained" onClick={setAGC}>AGC</Button>
-        </ButtonGroup>
-      </div>
-
-      <h2>{getTitle(contestType)}</h2>
+    <div className="contest-table">
+      <h2>{title}</h2>
       <TableContainer>
         <Table>
           <ContestTableHeader contestType={contestType} />
 
           <TableBody>
-            {/* <FixedSizeList
-              className="List"
-              height={1000}
-              itemCount={length}
-              itemSize={20}
-              width={1600}
-            >
-              {Line}
-            </FixedSizeList> */}
-            {selectedContests?.map((contest) => {
+
+            {contests.map((contest) => {
               return (
                 <ContestLine
                   key={contest.contestId}
                   contestId={contest.contestId}
                   problems={contest.problems}
-                  problemCount={problemCount}
+                  baseProblemCount={baseProblemCount}
                   showCodeSize={showCodeSize}
                   showExecTime={showExecTime}
                 />

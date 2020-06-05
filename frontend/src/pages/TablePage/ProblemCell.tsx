@@ -10,25 +10,34 @@ import { ExecTimeCircle } from "./ExecTimeCircle"
 
 interface ProblemCellProps {
   problem: Problem;
+  mod: number;
+  execBorderMedian: number | undefined;
+  execUserRank: number;
+  lengthBorderMedian: number | undefined;
+  lengthBorderQuantiles: number[];
+  lengthUserRank: number;
   showCodeSize: boolean;
   showExecTime: boolean;
 }
 
-export const ProblemCell : React.FC<ProblemCellProps> = ({ problem, showCodeSize, showExecTime }) => {
-  const language: string = 'Python';
+export const ProblemCell : React.FC<ProblemCellProps> = 
+({ problem, mod, execBorderMedian, execUserRank, lengthBorderMedian, 
+  lengthBorderQuantiles, lengthUserRank, showCodeSize, showExecTime }) => {
+
   return (
         <TableCell>
           <CodeSizeSquare
-            codeSizeAve={problem.codeSizeAverage?.get(language) || 3000}
+            medianBorder={lengthBorderMedian}
+            quantiles={lengthBorderQuantiles}
+            mod={mod}
             showCodeSize={showCodeSize}
           />
           <ExecTimeCircle
-            execTimeAve={problem.execTimeAverage?.get(language) || 1200}
+            execTimeAve={execBorderMedian}
             showExecTime={showExecTime}
           />
           <ProblemLink
             constestId={problem.contest_id}
-            lengthAve={3000}
             problemTitle={problem.title}
           />
         </TableCell>

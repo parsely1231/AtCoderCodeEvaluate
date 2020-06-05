@@ -2,14 +2,14 @@ export interface Problem {
   id: string;
   title: string;
   contest_id: string;
-  codeSizeAverage?: Map<string, number>;
-  execTimeAverage?: Map<string, number>;
 }
 
 export interface Contest {
   contestId: string;
   problems: Problem[]
 }
+
+export type ContestType = "ABC" | "ARC" | "AGC";
 
 type ContestId = string
 export type ContestsWithProblems = Map<ContestId, Problem[]>

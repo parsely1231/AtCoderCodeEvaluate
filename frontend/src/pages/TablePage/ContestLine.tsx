@@ -1,7 +1,7 @@
 import React from "react"
 import { TableCell, TableRow } from "@material-ui/core"
 
-import { Problem } from "../../interfaces/interfaces"
+import { Problem, BorderData } from "../../interfaces/interfaces"
 
 import { ContestLink } from "./ContestLink"
 import { ProblemCell } from "./ProblemCell"
@@ -10,14 +10,32 @@ import { ProblemCell } from "./ProblemCell"
 interface ContestLineProps {
   contestId: string;
   problems: Problem[];
-  problemCount: number;
+  baseProblemCount: number;
+  execBorderMap: Map<string, BorderData>,
+  lengthBorderMap: Map<string, BorderData>,
+  execStatusMap: Map<string, number>,
+  lengthStatusMap: Map<string, number>,
   showCodeSize: boolean;
   showExecTime: boolean;
 }
 
-export const ContestLine: React.FC<ContestLineProps> = ({ contestId, problems, problemCount, showCodeSize, showExecTime }) => {
-  const language: string = 'Python'
-  const shortage: number = problemCount - problems.length
+
+function calculateRank(status: number | undefined, border: BorderData | undefined): number {
+  if (status === undefined) return 0;
+  if (border === undefined) return 5;
+  if (status <= border.rank_a) return 5;
+  if (status <= border.rank_b) return 4;
+  if (status <= border.rank_c) return 3;
+  if (status <= border.rank_d) return 2;
+  return 1;
+}
+
+
+export const ContestLine: React.FC<ContestLineProps> =
+ ({ contestId, problems, baseProblemCount, showCodeSize,showExecTime,
+   execBorderMap, execStatusMap, lengthBorderMap, lengthStatusMap }) => {
+
+  const shortage: number = baseProblemCount - problems.length
   return (
     <TableRow>
       <TableCell key={contestId} component="th" scope="row">
@@ -25,6 +43,14 @@ export const ContestLine: React.FC<ContestLineProps> = ({ contestId, problems, p
       </TableCell>
 
       {problems.map((problem, index) => {
+        const execStatus = execStatusMap.get(problem.id)
+        const execBorder = execBorderMap.get(problem.id)
+        const lengthStatus = lengthStatusMap.get(problem.id)
+        const lengthBorder = lengthBorderMap.get(problem.id)
+
+        const execRank = calculateRank(execStatus, execBorder)
+        const lengthRank = calculateRank(lengthStatus, lengthBorder)
+
         return <ProblemCell
                   key={index} 
                   problem={problem}

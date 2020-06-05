@@ -1,11 +1,9 @@
 import { RankingEntry, ContestsWithProblems, Problem, BorderData, BorderType, Submission } from "../interfaces/interfaces"
 
 
-
 const API_BASE_URL = '/api';
 const PROBLEMS_URL = "/atcoder/resources/problems.json";
 const SUBMISSION_URL = "/atcoder/atcoder-api";
-
 
 // ***************** Fetch Ranking *****************
 
