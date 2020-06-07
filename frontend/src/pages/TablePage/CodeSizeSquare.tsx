@@ -29,7 +29,7 @@ const getColor = (codeSizeMedian: number, descSortedQuantiles: number[]): string
 
 export const CodeSizeSquare: React.FC<CodeSizeSquareProps> = ({ medianBorder, showCodeSize, mod, quantiles }) => {
   if (showCodeSize == false) return null
-  if (medianBorder === undefined) return <span className="unavailable-square">?</span>
+  if (medianBorder === undefined) return <span className="unavailable">?</span>
 
   const color = getColor(medianBorder, quantiles);
   const fill: number = 

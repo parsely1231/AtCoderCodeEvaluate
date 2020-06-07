@@ -33,7 +33,7 @@ export const ProblemCell : React.FC<ProblemCellProps> =
             showCodeSize={showCodeSize}
           />
           <ExecTimeCircle
-            execTimeAve={execBorderMedian}
+            medianBorder={execBorderMedian}
             showExecTime={showExecTime}
           />
           <ProblemLink

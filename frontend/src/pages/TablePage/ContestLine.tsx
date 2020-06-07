@@ -10,11 +10,13 @@ import { ProblemCell } from "./ProblemCell"
 interface ContestLineProps {
   contestId: string;
   problems: Problem[];
+  mod: number;
   baseProblemCount: number;
   execBorderMap: Map<string, BorderData>,
   lengthBorderMap: Map<string, BorderData>,
   execStatusMap: Map<string, number>,
   lengthStatusMap: Map<string, number>,
+  lengthBorderQuantiles: number[],
   showCodeSize: boolean;
   showExecTime: boolean;
 }
@@ -32,8 +34,8 @@ function calculateRank(status: number | undefined, border: BorderData | undefine
 
 
 export const ContestLine: React.FC<ContestLineProps> =
- ({ contestId, problems, baseProblemCount, showCodeSize,showExecTime,
-   execBorderMap, execStatusMap, lengthBorderMap, lengthStatusMap }) => {
+ ({ contestId, problems, mod, baseProblemCount, showCodeSize,showExecTime,
+   execBorderMap, execStatusMap, lengthBorderMap, lengthStatusMap, lengthBorderQuantiles }) => {
 
   const shortage: number = baseProblemCount - problems.length
   return (
@@ -54,6 +56,12 @@ export const ContestLine: React.FC<ContestLineProps> =
         return <ProblemCell
                   key={index} 
                   problem={problem}
+                  mod={mod}
+                  execBorderMedian={execBorder?.rank_c}
+                  execUserRank={execRank}
+                  lengthBorderMedian={lengthBorder?.rank_c}
+                  lengthBorderQuantiles={lengthBorderQuantiles}
+                  lengthUserRank={lengthRank}
                   showCodeSize={showCodeSize}
                   showExecTime={showExecTime}
                 />
