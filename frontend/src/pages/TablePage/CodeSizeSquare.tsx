@@ -1,11 +1,13 @@
 import React from "react";
 
+import { Tooltip } from "@material-ui/core"
+
 
 interface CodeSizeSquareProps {
   medianBorder: number | undefined;
   showCodeSize: boolean;
-  mod: number;
   quantiles: number[];
+  lengthUserRank: number;
 }
 
 const COLORS = [
@@ -19,35 +21,50 @@ const COLORS = [
   "#808080",  // grey
 ] 
 
-const getColor = (codeSizeMedian: number, descSortedQuantiles: number[]): string => {
-  descSortedQuantiles.forEach((quantile, index) => {
-    if (codeSizeMedian >= quantile) return COLORS[index]
-  })
-  return "#808080"  // grey
+function getQuantileIndex(codeSizeMedian: number, descSortedQuantiles: number[]): number {
+  for (const [index, quantile] of descSortedQuantiles.entries()){
+    if (codeSizeMedian >= quantile) return index
+  }
+  return 7
 }
-  
 
-export const CodeSizeSquare: React.FC<CodeSizeSquareProps> = ({ medianBorder, showCodeSize, mod, quantiles }) => {
+
+const DISPLAY = ["-", "E", "D", "C", "B", "A"]
+
+export const CodeSizeSquare: React.FC<CodeSizeSquareProps> = ({ medianBorder, showCodeSize, quantiles, lengthUserRank }) => {
   if (showCodeSize == false) return null
   if (medianBorder === undefined) return <span className="unavailable">?</span>
 
-  const color = getColor(medianBorder, quantiles);
-  const fill: number = 
-    medianBorder >= quantiles[0] + mod
-      ? 100 
-      : Math.floor((medianBorder % mod) / mod * 100);
-  
-  const residue: number = 100 - fill;
+  const quantileIndex = getQuantileIndex(medianBorder, quantiles)
 
+  const color = COLORS[quantileIndex]
+  const borderRange = quantileIndex === 0 
+    ? 1
+    : quantiles[quantileIndex-1] - quantiles[quantileIndex]
+    
+  const fill: number = 
+    medianBorder >= quantiles[0]
+      ? 0 
+      : 100 - Math.floor((medianBorder - quantiles[quantileIndex]) / borderRange * 100);
+  
   const styleOptions: Object = {
     borderColor: color,
-    background: `linear-gradient(#ffffff ${residue}%, ${color} ${fill}%)`
+    background: `linear-gradient(#ffffff ${fill}%, ${color} ${fill}%)`
   }
+  
+  
 
   return (
-    <span
-      className="length-square"
-      style={styleOptions}
-    />
+    <div className='status-box'>
+      <Tooltip title={medianBorder}>
+        <span
+          className="length-square"
+          style={styleOptions}
+        />
+      </Tooltip>
+      <span className={"status-"+lengthUserRank}>
+        {DISPLAY[lengthUserRank]}
+      </span>
+    </div>
   )
 }

@@ -1,9 +1,9 @@
 import React from "react"
 
+import { Problem } from "../../interfaces/interfaces"
 
 interface ProblemLinkProps {
-  constestId: string
-  problemTitle: string
+  problem: Problem
 }
 
 // const getColorClass = (lengthAve: number): string => {
@@ -29,9 +29,9 @@ interface ProblemLinkProps {
 
 const ATCODER_CONTEST_BASE_URL:string = "https://atcoder.jp/contests/"
 
-export const ProblemLink = React.memo<ProblemLinkProps>((props) => {
-  const contestId: string = props.constestId.toLowerCase();
-  const problemId: string = contestId + "_" + props.problemTitle.slice(0,1).toLowerCase();
+export const ProblemLink = React.memo<ProblemLinkProps>(({problem}) => {
+  const contestId: string = problem.contest_id;
+  const problemId: string = problem.id;
   const url: string = `${ATCODER_CONTEST_BASE_URL+contestId}/tasks/${problemId}`;
   // const colorClass: string = getColorClass(props.lengthAve);
   return (
@@ -40,7 +40,7 @@ export const ProblemLink = React.memo<ProblemLinkProps>((props) => {
       target="_blank"
       rel="noopener"
     >
-      {props.problemTitle}
+      {problem.title}
     </a>
   )
 })

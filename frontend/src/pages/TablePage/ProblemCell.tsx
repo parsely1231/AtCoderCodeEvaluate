@@ -10,7 +10,6 @@ import { ExecTimeCircle } from "./ExecTimeCircle"
 
 interface ProblemCellProps {
   problem: Problem;
-  mod: number;
   execBorderMedian: number | undefined;
   execUserRank: number;
   lengthBorderMedian: number | undefined;
@@ -21,7 +20,7 @@ interface ProblemCellProps {
 }
 
 export const ProblemCell : React.FC<ProblemCellProps> = 
-({ problem, mod, execBorderMedian, execUserRank, lengthBorderMedian, 
+({ problem, execBorderMedian, execUserRank, lengthBorderMedian, 
   lengthBorderQuantiles, lengthUserRank, showCodeSize, showExecTime }) => {
 
   return (
@@ -29,16 +28,16 @@ export const ProblemCell : React.FC<ProblemCellProps> =
           <CodeSizeSquare
             medianBorder={lengthBorderMedian}
             quantiles={lengthBorderQuantiles}
-            mod={mod}
             showCodeSize={showCodeSize}
+            lengthUserRank={lengthUserRank}
           />
           <ExecTimeCircle
             medianBorder={execBorderMedian}
             showExecTime={showExecTime}
+            execUserRank={execUserRank}
           />
           <ProblemLink
-            constestId={problem.contest_id}
-            problemTitle={problem.title}
+            problem={problem}
           />
         </TableCell>
   )

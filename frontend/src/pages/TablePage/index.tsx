@@ -28,15 +28,10 @@ export const InnerContestTablePage: React.FC<InnerProps> =
   const [showCodeSize, setShowCodeSize] = useState(true);
   const [showExecTime, setShowExecTime] = useState(true);
 
-  const setABC = useCallback(() => setContestType('ABC'), []);
-  const setARC = useCallback(() => setContestType('ARC'), []);
-  const setAGC = useCallback(() => setContestType('AGC'), []);
+  const setABC = useCallback(() => setContestType("ABC"), []);
+  const setARC = useCallback(() => setContestType("ARC"), []);
+  const setAGC = useCallback(() => setContestType("AGC"), []);
 
-  const problemCount: number = 
-    contestType === "ABC" ? 6
-    :contestType ==='ARC' ? 4
-    : 7;
-  
   const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setShowCodeSize(event.target.checked)
   }, [])
@@ -46,7 +41,7 @@ export const InnerContestTablePage: React.FC<InnerProps> =
   }, [])
 
   const contests: Contest[] = contestsWithProblemsFetch.fulfilled
-    ? [...contestsWithProblemsFetch.value.entries()].map((entry): Contest => {
+    ? [...contestsWithProblemsFetch.value.entries()].reverse().map((entry): Contest => {
       const [contestId, problems]: [string, Problem[]] = entry
       return {
         contestId: contestId,

@@ -27,9 +27,8 @@ function getTitle(contestType: ContestType): string {
   }
 }
 
-
 function quantile(sortedArray: number[], percentile: number) {
-  const index = percentile/100. * (sortedArray.length-1);
+  const index = percentile/100 * (sortedArray.length-1);
   if (Math.floor(index) == index) return sortedArray[index];
 
   const i = Math.floor(index)
@@ -70,15 +69,15 @@ export const ContestTable: React.FC<TableProps> =
   const title = getTitle(contestType);
   const baseProblemCount: number 
     = contestType === "ABC" ? 6
-    :contestType ==='ARC' ? 4
+    : contestType ==='ARC' ? 4
     : 7;
   
-  const lengthBorderMedianList = [...lengthBorderMap.values()].map(border => border.rank_c)
-  lengthBorderMedianList.sort().reverse()
-  const lengthBorderQuantiles = quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100])
-  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[-1]) / 8)
+  const lengthBorderMedianList = useMemo(() => [...lengthBorderMap.values()].map(border => border.rank_c).sort((a, b)=> b-a), [lengthBorderMap])
+  const lengthBorderQuantiles = useMemo(() => quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100]), [lengthBorderMap])
+  
+  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[lengthBorderMedianList.length-1]) / 8)
   const lowerContestType = contestType.toLowerCase()
-  const filterdContests = contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType)
+  const filterdContests = useMemo(() => contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType), [contestType, contests])
 
   const [execStatusMap, lengthStatusMap] = useMemo(() => toCodeStatusMap(submissions), [submissions])
 
@@ -97,7 +96,6 @@ export const ContestTable: React.FC<TableProps> =
                   key={contest.contestId}
                   contestId={contest.contestId}
                   problems={contest.problems}
-                  mod={mod}
                   baseProblemCount={baseProblemCount}
                   execBorderMap={execBorderMap}
                   execStatusMap={execStatusMap}

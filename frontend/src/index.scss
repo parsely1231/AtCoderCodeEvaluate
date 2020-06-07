@@ -68,7 +68,6 @@
     border-radius: 20%;
     border-style: solid;
     border-width: 1px;
-    margin-right: 5px;
     height: 10px;
     width: 10px;
   }
@@ -78,7 +77,6 @@
     border-radius: 50%;
     border-style: solid;
     border-width: 1px;
-    margin-right: 5px;
     height: 10px;
     width: 10px;
   }
@@ -90,6 +88,33 @@
   }
 }
 
+.status-box {
+  display: inline-flex;
+  text-align: center;
+  flex-direction: column;
+  margin-right: 5px;
+}
+
+.status {
+  &-5 {
+    color: red;
+  }
+  &-4 {
+    color: "#C0C000";
+  }
+  &-3 {
+    color: blue;
+  }
+  &-2 {
+    color: green;
+  }
+  &-1 {
+    color: brown
+  }
+  &-0 {
+    color: black;
+  }
+}
 
 .nav-button {
   & span {
