@@ -49,6 +49,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
   }, [rankingEntries, acFilter, orderBy])
 
   const orderedRanking = useMemo(() => {
+    // ソートされたEntriesから表示するスコアを抜き出す。同じ値の人は同じ順位になるように調整する
     return sortedFilteredEntries.reduce((ranking, entry, index) => {
       const last = ranking.length === 0 ? undefined : ranking[ranking.length - 1];
       const nextEntry =
@@ -68,8 +69,10 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
     }, [] as RankingRowProps[]);
   }, [rankingEntries, acFilter, orderBy])
 
-    let yourRank: number | string = orderedRanking.findIndex(entry => entry.userId === userId) + 1
-    if (yourRank === 0) yourRank = "No Entry"
+    let yourIndex: number | string = orderedRanking.findIndex(entry => entry.userId === userId)
+    const yourRank = yourIndex === -1 
+      ? "No Entry" 
+      : orderedRanking[yourIndex].rank
 
   return (
       <Paper className="ranking-table">

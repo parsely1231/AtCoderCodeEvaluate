@@ -2,143 +2,108 @@ import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "
 import { Button, ButtonGroup ,Checkbox, FormControlLabel, Table, TableBody, TableContainer } from "@material-ui/core"
 // import { FixedSizeList } from "react-window"
 
-import { ContestsData, Contest } from "../../interfaces/interfaces"
+import { ContestsWithProblems, Contest, BorderData, ContestType, Submission } from "../../interfaces/interfaces"
 
-import { fetchContest } from "./fetchContest";
 
 import { ContestLine } from "./ContestLine"
 import { ContestTableHeader } from "./ContestTableHeader"
 
 
-const getTitle = (contestType:string): string => {
+type TableProps = {
+  contestType: ContestType,
+  contests: Contest[],
+  execBorderMap: Map<string, BorderData>,
+  lengthBorderMap: Map<string, BorderData>,
+  submissions: Submission[],
+  showExecTime: boolean,
+  showCodeSize: boolean,
+}
+
+function getTitle(contestType: ContestType): string {
   switch (contestType) {
-  case "ABC":
-    return "AtCoder Beginner Contest"
-  
-  case "ARC":
-    return "AtCoder Regular Contest"
-  
-  case "AGC":
-    return "AtCoder Grand Contest"
-  
-  default:
-    return "AtCoder Beginner Contest"
+    case "ABC": return "AtCoder Begginer Contest";
+    case "ARC": return "AtCoder Regular Contest";
+    case "AGC": return "AtCoder Grand Contest";
   }
 }
 
-type ContestType = string
 
-function apiToContestDataByType (apiData: ContestsData): Map<ContestType, Contest[]> {
-  const contestsDataByType: Map<ContestType, Contest[]> = new Map([
-    ['ABC', []],
-    ['ARC', []],
-    ['AGC', []],
-  ])
+function quantile(sortedArray: number[], percentile: number) {
+  const index = percentile/100. * (sortedArray.length-1);
+  if (Math.floor(index) == index) return sortedArray[index];
 
-  apiData.forEach((problems, contestId) => {
-    const contestType = contestId.slice(0, 3).toUpperCase();
-    const contest: Contest = {
-      contestId: contestId,
-      problems: problems
+  const i = Math.floor(index)
+  const fraction = index - i;
+  const result = sortedArray[i] + (sortedArray[i+1] - sortedArray[i]) * fraction;
+  return result;
+}
+
+function quantiles(sortedArray: number[], percentiles: number[]) {
+  return percentiles.map((percentile) => quantile(sortedArray, percentile))
+}
+
+function toCodeStatusMap(submissions: Submission[]): Map<string, number>[] {
+  const execStatusMap: Map<string, number> = new Map();
+  const lengthStatusMap: Map<string, number> = new Map();
+
+  submissions.forEach((submission) => {
+    const problem = submission.problem_id;
+    const newExec = submission.execution_time;
+    const newLength = submission.length;
+
+    const prevExec = execStatusMap.get(problem);
+    const prevLength = lengthStatusMap.get(problem);
+
+    if (prevExec == undefined || newExec < prevExec) {
+      execStatusMap.set(problem, newExec);
     }
-    contestsDataByType.get(contestType)?.push(contest)
+    if (prevLength == undefined || newLength < prevLength) {
+      lengthStatusMap.set(problem, newLength);
+    }
   })
-  for (const key of contestsDataByType.keys()) {
-    contestsDataByType.get(key)?.reverse();
-  }
-
-  return contestsDataByType
+  return [execStatusMap, lengthStatusMap];
 }
 
-export const ContestTable: React.FC = () => {
-  const [contestDataByType, setContestDataByType] = useState(new Map<ContestType, Contest[]>())
-  const [showCodeSize, setShowCodeSize] = useState(true);
-  const [showExecTime, setShowExecTime] = useState(true);
+export const ContestTable: React.FC<TableProps> = 
+({contestType, contests, execBorderMap, lengthBorderMap, submissions, showCodeSize, showExecTime}) => {
 
-  useEffect(() => {
-    fetchContest()
-      .then((apiData) => setContestDataByType(apiToContestDataByType(apiData)))
-  }, []);
-
-  const [contestType, setContestType]: [string, Function] = useState('ABC');
-  const setABC = useCallback(() => setContestType('ABC'), []);
-  const setARC = useCallback(() => setContestType('ARC'), []);
-  const setAGC = useCallback(() => setContestType('AGC'), []);
-
-  const problemCount: number = 
-    contestType === "ABC" ? 6
+  const title = getTitle(contestType);
+  const baseProblemCount: number 
+    = contestType === "ABC" ? 6
     :contestType ==='ARC' ? 4
     : 7;
   
-  const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowCodeSize(event.target.checked)
-  }, [])
+  const lengthBorderMedianList = [...lengthBorderMap.values()].map(border => border.rank_c)
+  lengthBorderMedianList.sort().reverse()
+  const lengthBorderQuantiles = quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100])
+  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[-1]) / 8)
+  const lowerContestType = contestType.toLowerCase()
+  const filterdContests = contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType)
 
-  const handleShowExecTime = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowExecTime(event.target.checked)
-  }, [])
-
-  const selectedContests = contestDataByType.get(contestType);
-  // const length = selectedContests? selectedContests.length : 0
-  // const Line = ({ index, style }: {index: number, style:any}) => {
-  //   const contest = selectedContests? selectedContests[index] : null;
-  //   if (contest == null) return null;
-  //   return (
-  //     <ContestLine
-  //       key={contest.contestId}
-  //       contestId={contest.contestId}
-  //       problems={contest.problems}
-  //       showCodeSize={showCodeSize}
-  //       showExecTime={showExecTime}
-  //     />
-  //   )}
+  const [execStatusMap, lengthStatusMap] = useMemo(() => toCodeStatusMap(submissions), [submissions])
 
   return (
-    <div className="contest-table-page">
-      <div>
-        <FormControlLabel
-            value="showCodeSize"
-            control={<Checkbox color="primary" checked={showCodeSize} onChange={handleShowCodeSize}/>}
-            label="ShowCodeSize"
-            labelPlacement="start"
-        />
-        <FormControlLabel
-            value="showExecTime"
-            control={<Checkbox color="primary" checked={showExecTime} onChange={handleShowExecTime}/>}
-            label="ShowExecTime"
-            labelPlacement="start"
-        />
-      </div>
-      <div>
-        <ButtonGroup>
-          <Button variant="contained" onClick={setABC}>ABC</Button>
-          <Button variant="contained" onClick={setARC}>ARC</Button>
-          <Button variant="contained" onClick={setAGC}>AGC</Button>
-        </ButtonGroup>
-      </div>
-
-      <h2>{getTitle(contestType)}</h2>
+    <div className="contest-table">
+      <h2>{title}</h2>
       <TableContainer>
         <Table>
           <ContestTableHeader contestType={contestType} />
 
           <TableBody>
-            {/* <FixedSizeList
-              className="List"
-              height={1000}
-              itemCount={length}
-              itemSize={20}
-              width={1600}
-            >
-              {Line}
-            </FixedSizeList> */}
-            {selectedContests?.map((contest) => {
+
+            {filterdContests.map((contest) => {
               return (
                 <ContestLine
                   key={contest.contestId}
                   contestId={contest.contestId}
                   problems={contest.problems}
-                  problemCount={problemCount}
+                  mod={mod}
+                  baseProblemCount={baseProblemCount}
+                  execBorderMap={execBorderMap}
+                  execStatusMap={execStatusMap}
+                  lengthBorderMap={lengthBorderMap}
+                  lengthStatusMap={lengthStatusMap}
+                  lengthBorderQuantiles={lengthBorderQuantiles}
                   showCodeSize={showCodeSize}
                   showExecTime={showExecTime}
                 />
