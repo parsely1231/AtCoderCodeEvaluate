@@ -1,12 +1,16 @@
 import React from "react"
+import { Tooltip } from "@material-ui/core"
 
 
 interface ExecTimeCircleProps {
   medianBorder: number | undefined;
   showExecTime: boolean;
+  execUserRank: number;
 }
 
-export const ExecTimeCircle: React.FC<ExecTimeCircleProps> = ({ medianBorder, showExecTime }) => {
+const DISPLAY = ["-", "E", "D", "C", "B", "A"]
+
+export const ExecTimeCircle: React.FC<ExecTimeCircleProps> = ({ medianBorder, showExecTime, execUserRank }) => {
   if (showExecTime == false) return null
   if (medianBorder === undefined) return <span className="unavailable">?</span>
 
@@ -21,9 +25,16 @@ export const ExecTimeCircle: React.FC<ExecTimeCircleProps> = ({ medianBorder, sh
   }
 
   return (
-    <span
-      className="exectime-circle"
-      style={styleOptions}
-    />
+    <div className="status-box">
+      <Tooltip title={medianBorder}>
+        <span
+          className="exectime-circle"
+          style={styleOptions}
+        />
+      </Tooltip>
+      <span className={"status-"+execUserRank}>
+        {DISPLAY[execUserRank]}
+      </span>
+    </div>
   )
 }

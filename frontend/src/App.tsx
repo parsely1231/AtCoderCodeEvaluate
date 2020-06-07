@@ -9,7 +9,7 @@ import {
 
 import { NavigationBar } from "./components/NavigationBar"
 import { PageLinks } from "./components/PageLinks"
-import { ContestTable } from "./pages/TablePage/ContestTable"
+import { ContestTablePage } from "./pages/TablePage/index"
 import { StatusBarChart } from "./components/BarChart"
 import { UserPage } from "./pages/UserPage/UserPage"
 import { RankingPage } from "./pages/RankingPage/index"
@@ -49,7 +49,10 @@ const App = () => {
             )}
           />
           <Route path="/table">
-            <ContestTable />
+            <ContestTablePage
+              userId={'parsely'}
+              language="Python3 (3.4.3)"
+            />
           </Route>
 
           <Route path="/user">
