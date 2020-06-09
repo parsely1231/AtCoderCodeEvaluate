@@ -67,3 +67,11 @@ export interface BorderData {
 
 export type BorderType = 'exec_time_status' | 'code_size_status';
 
+export type CountingByStatus = {
+  A: number
+  B: number
+  C: number
+  D: number
+  E: number
+  unsolved: number
+}
