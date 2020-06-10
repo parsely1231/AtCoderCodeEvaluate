@@ -3,7 +3,7 @@ import { connect, PromiseState } from "react-refetch"
 
 import { Button, ButtonGroup, Checkbox, FormControlLabel } from '@material-ui/core';
 
-import { cachedContestsWithProblmes, cachedExecBorder, cachedLengthBorder, cachedUserSubmissions } from "../../utils/cachedApiClient"
+import { cachedContestsWithProblems, cachedExecBorder, cachedLengthBorder, cachedUserSubmissions } from "../../utils/cachedApiClient"
 import { ContestsWithProblems, Submission, BorderData, ContestType, Problem, Contest } from "../../interfaces/interfaces"
 
 import { ContestTable } from "./ContestTable"
@@ -27,10 +27,6 @@ export const InnerContestTablePage: React.FC<InnerProps> =
   const [contestType, setContestType]: [ContestType, Function] = useState("ABC")
   const [showCodeSize, setShowCodeSize] = useState(true);
   const [showExecTime, setShowExecTime] = useState(true);
-
-  const setABC = useCallback(() => setContestType("ABC"), []);
-  const setARC = useCallback(() => setContestType("ARC"), []);
-  const setAGC = useCallback(() => setContestType("AGC"), []);
 
   const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setShowCodeSize(event.target.checked)
@@ -80,9 +76,9 @@ export const InnerContestTablePage: React.FC<InnerProps> =
       </div>
       <div>
         <ButtonGroup>
-          <Button variant="contained" onClick={setABC}>ABC</Button>
-          <Button variant="contained" onClick={setARC}>ARC</Button>
-          <Button variant="contained" onClick={setAGC}>AGC</Button>
+          <Button variant="contained" onClick={() => setContestType("ABC")}>ABC</Button>
+          <Button variant="contained" onClick={() => setContestType("ARC")}>ARC</Button>
+          <Button variant="contained" onClick={() => setContestType("AGC")}>AGC</Button>
         </ButtonGroup>
       </div>
 
@@ -104,7 +100,7 @@ export const ContestTablePage = connect<OuterProps, InnerProps>(({userId, langua
   contestsWithProblemsFetch: {
     comparison: null,
     value: (): Promise<ContestsWithProblems> =>
-      cachedContestsWithProblmes()
+      cachedContestsWithProblems()
   },
   submissionsFetch: {
     comparison: [userId],

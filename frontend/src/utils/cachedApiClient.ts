@@ -37,6 +37,20 @@ export const cachedRankings = (language: string): Promise<Required<RankingEntry>
   return ranking;
 }
 
+// ***************** Fetch Problems *****************
+async function fetchProblems(): Promise<Problem[]> {
+  const res = await fetch(PROBLEMS_URL);
+  return await res.json();
+}
+
+let PROBLEMS: undefined | Promise<Problem[]>
+
+export const cachedProblems = () => {
+  if (PROBLEMS === undefined) {
+    PROBLEMS = fetchProblems();
+  }
+  return PROBLEMS;
+}
 
 // ***************** Fetch Contests and Problems *****************
 
@@ -47,8 +61,7 @@ function pushProblemToContestDict (contestDict:ContestsWithProblems, problem:Pro
 }
 
 async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
-  const res = await fetch(PROBLEMS_URL);
-  const problemsJson: Problem[] = await res.json();
+  const problemsJson = await cachedProblems();
   const contestDict: ContestsWithProblems = problemsJson.reduce((dict, problem) => {
     pushProblemToContestDict(dict, problem);
     return dict;
@@ -59,7 +72,7 @@ async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
 
 let CONTESTS_WITH_PROBLEMS: undefined | Promise<ContestsWithProblems>
 
-export const cachedContestsWithProblmes = () => {
+export const cachedContestsWithProblems = () => {
   if (CONTESTS_WITH_PROBLEMS === undefined) {
     CONTESTS_WITH_PROBLEMS = fetchContestsWithProblems()
   }

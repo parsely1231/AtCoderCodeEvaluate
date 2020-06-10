@@ -69,15 +69,24 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
     }, [] as RankingRowProps[]);
   }, [rankingEntries, acFilter, orderBy])
 
-    let yourIndex: number | string = orderedRanking.findIndex(entry => entry.userId === userId)
+    const yourIndex = orderedRanking.findIndex(entry => entry.userId === userId)
     const yourRank = yourIndex === -1 
       ? "No Entry" 
       : orderedRanking[yourIndex].rank
 
   return (
-      <Paper className="ranking-table">
+      <Paper className="ranking-container">
         <div className="ranking-title">Ranking {language} {title}</div>
         <div className="ranking-you">Your Rank is {yourRank} / {orderedRanking.length}</div>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 50, 100]}
+          component="div"
+          count={orderedRanking.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
         <TableContainer>
           <Table>
             <TableHead>

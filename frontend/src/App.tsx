@@ -8,11 +8,10 @@ import {
 } from "react-router-dom";
 
 import { NavigationBar } from "./components/NavigationBar"
-import { PageLinks } from "./components/PageLinks"
 import { ContestTablePage } from "./pages/TablePage/index"
-import { StatusBarChart } from "./components/BarChart"
-import { UserPage } from "./pages/UserPage/UserPage"
+import { UserPage } from "./pages/UserPage/index"
 import { RankingPage } from "./pages/RankingPage/index"
+
 
 interface IdProps {
   id: string
@@ -56,7 +55,10 @@ const App = () => {
           </Route>
 
           <Route path="/user">
-            <UserPage/>
+            <UserPage
+              userId={'parsely'}
+              language="Python3 (3.4.3)"
+              />
           </Route>
 
           <Route exact path="/ranking/exectime">

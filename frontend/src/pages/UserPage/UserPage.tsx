@@ -1,19 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
-import AppBar from '@material-ui/core/AppBar';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-
-import { StatusBarChart } from "../../components/BarChart";
 import { StatusPieChart } from "../../components/StatusPieChart";
-import { stat } from "fs";
 import { Submission, BorderData } from "../../interfaces/interfaces";
 
 import { fetchUserSubmissions } from "./fetchUserSubmission"
 import { fetchBorder } from "./fetchBorder";
 import { fetchProblemCount } from "./fetchProblemCount"
-import { exec } from "child_process";
 
 
 type ProblemID = string

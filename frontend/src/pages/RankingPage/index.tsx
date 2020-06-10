@@ -23,9 +23,6 @@ interface InnerProps extends OuterProps {
 const InnerRankingPage: React.FC<InnerProps> = ({ rankingFetch, userId, language }) => {
   const [orderBy, setOrderBy]: [RankingOrderBy, Function] = React.useState("exec_time_points");
   const [filterCount, setFilterCount] = React.useState(0)
-  const handleChangeOrderBy = (event: React.ChangeEvent<{}>, newValue: string) => {
-    setOrderBy(newValue);
-  };
 
   if (rankingFetch.pending) {
     return <LinearProgress/>
@@ -35,10 +32,13 @@ const InnerRankingPage: React.FC<InnerProps> = ({ rankingFetch, userId, language
     ? rankingFetch.value
     : []
 
+  const handleChangeOrderBy = (event: React.ChangeEvent<{}>, newValue: string) => {
+    setOrderBy(newValue);
+  };
+
   const handleChangeFilterCount = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterCount(parseInt(event.target.value));
   };
-  console.log(rankingEntries)
 
   return (
     <div className="ranking-page">
