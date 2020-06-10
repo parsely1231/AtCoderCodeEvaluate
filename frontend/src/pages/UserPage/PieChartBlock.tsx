@@ -12,18 +12,18 @@ type ProblemRank = "a" | "b" | "c" | "d" | "e" | "f"
 
 type Props = {
   title: string,
-  countingByStatusByProblemRank: StatusCountByProblemRank
+  statusCountByProblemRank: StatusCountByProblemRank
 }
 
 
-export const PieChartBlock: React.FC<Props> = ({title, countingByStatusByProblemRank}) => {
+export const PieChartBlock: React.FC<Props> = ({title, statusCountByProblemRank}) => {
 
   return (
     <>
       <h2>{title}</h2>
       <div className="piecharts-line">
 
-        {Array.from(countingByStatusByProblemRank).map(([problemRank, CountingByStatus]) => {
+        {Array.from(statusCountByProblemRank).map(([problemRank, CountingByStatus]) => {
 
           return (
             <div className="piechart-box">

@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { connect, PromiseState } from "react-refetch"
 
-import { Paper, Tabs, Tab, TextField, LinearProgress, MenuItem} from '@material-ui/core';
+import { Paper, Tabs, Tab, LinearProgress, MenuItem} from '@material-ui/core';
 
 import { cachedUserSubmissions, cachedExecBorder, cachedLengthBorder, cachedProblems } from "../../utils/cachedApiClient"
-import { Submission, BorderData, Problem, StatusCount } from "../../interfaces/interfaces"
+import { Submission, BorderData, Problem, StatusCount, ContestType } from "../../interfaces/interfaces"
 import { PieChartBlock} from "./PieChartBlock"
 
 
@@ -94,8 +94,9 @@ function calcStatusCountByProblemRank(
   codeStatus: CodeStatusMap,
   borderMap: Map<ProblemId, BorderData>,
   problemCountByRank: ProblemCountByRank,
+  contestType: ContestType
 ) {
-
+  const selected = contestType.toLowerCase();
   const statusCountByProblemRank: StatusCountByProblemRank = new Map();
   
   problemCountByRank.forEach((count, problemRank) => {
@@ -104,9 +105,11 @@ function calcStatusCountByProblemRank(
   })
 
   codeStatus.forEach((status, problemId) => {
+    const contestType = problemId.slice(0, 3);
+    if (contestType !== selected) return;
+
     const border = borderMap.get(problemId);
     const solvedRank = calculateRank(status, border);
-    const contestType = problemId.slice(0, 3);
     let preProblemRank = problemId.slice(-1);
 
     // 初期ABCとARCがabc001_1のようにproblemIdの末尾が数字になっているのでその対応
@@ -132,15 +135,33 @@ function calcStatusCountByProblemRank(
   return statusCountByProblemRank;
 }
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  myType: string;
+  selectedType: string;
+}
 
+
+function TabPanel(props: TabPanelProps) {
+  const { children, selectedType, myType} = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={selectedType !== myType}
+    >
+      {selectedType === myType && (
+        <div>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 
 const InnerUserPage: React.FC<InnerProps> = 
 ({ userId, language, problemsFetch, submissionsFetch, execBorderFetch, lengthBorderFetch }) => {
-
-  if (submissionsFetch.pending || execBorderFetch.pending || lengthBorderFetch.pending) {
-    return <LinearProgress/>
-  }
 
   const submissions = 
     submissionsFetch.fulfilled
@@ -165,18 +186,9 @@ const InnerUserPage: React.FC<InnerProps> =
   const execStatusMap = useMemo(() => toCodeStatusMap(submissions, "execution_time"), [submissions])
   const lengthStatusMap = useMemo(() => toCodeStatusMap(submissions, "length"), [submissions])
 
-  const abcProblemCount = calcProblemCountByRank()
-
-
-
-
-  const[abcExecRankCount, arcExecRankCount, agcExecRankCount] = useMemo(() => {
-    return calculateRankCount(execStatusMap, execBorderMap, abcProblemCount, arcProblemCount, agcProblemCount);
-  }, [execStatusMap, execBorderMap, agcProblemCount])
-
-  const[abcLengthRankCount, arcLengthRankCount, agcLengthRankCount] = useMemo(() => {
-    return calculateRankCount(lengthStatusMap, lengthBorderMap, abcProblemCount, arcProblemCount, agcProblemCount);
-  }, [lengthStatusMap, lengthBorderMap, agcProblemCount])
+  const abcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "abc")), [submissions])
+  const arcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "arc")), [submissions])
+  const agcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "agc")), [submissions])
   
   const [statusType, setStatusType] = useState('Execution Time')
 
@@ -184,9 +196,14 @@ const InnerUserPage: React.FC<InnerProps> =
     setStatusType(newValue);
   };
 
+
+  if (submissionsFetch.pending || execBorderFetch.pending || lengthBorderFetch.pending) {
+    return <LinearProgress/>
+  }
+
   return (
-    
     <div>
+      <h1>Hello {userId}! language={language}</h1>
       <Paper square>
         <Tabs
           value={statusType}
@@ -198,93 +215,41 @@ const InnerUserPage: React.FC<InnerProps> =
           <Tab label="Code Length" value="Code Length" />
         </Tabs>
       </Paper>
+
       <TabPanel myType="Execution Time" selectedType={statusType}>
         <h1>Execution Time</h1>
-        <h2>AtCoder Begginer Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(abcExecRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
-
-        <h2>AtCoder Regular Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(arcExecRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
-
-        <h2>AtCoder Grand Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(agcExecRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
+        <PieChartBlock
+          title="AtCoder Begginer Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(execStatusMap, execBorderMap, abcProblemCount, "ABC")}
+        />
+        <PieChartBlock
+          title="AtCoder Regular Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(execStatusMap, execBorderMap, arcProblemCount, "ARC")}
+        />
+        <PieChartBlock
+          title="AtCoder Begginer Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(execStatusMap, execBorderMap, agcProblemCount, "AGC")}
+        />
       </TabPanel>
 
       <TabPanel myType="Code Length" selectedType={statusType}>
         <h1>Code Length</h1>
-        <h2>AtCoder Begginer Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(abcLengthRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
-
-        <h2>AtCoder Regular Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(arcLengthRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
-
-        <h2>AtCoder Grand Contest</h2>
-        <div className="piecharts-line">
-          {Array.from(agcLengthRankCount).map(([problemRank, rankCount]) => {
-            return (
-              <div className="piechart-box">
-                <StatusPieChart scoredData={rankCount}/>
-                <h3>Problem {problemRank.toUpperCase()}</h3>
-              </div>
-            )
-          })}
-        </div>
+        <PieChartBlock
+          title="AtCoder Begginer Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(lengthStatusMap, lengthBorderMap, abcProblemCount, "ABC")}
+        />
+        <PieChartBlock
+          title="AtCoder Regular Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(lengthStatusMap, lengthBorderMap, arcProblemCount, "ARC")}
+        />
+        <PieChartBlock
+          title="AtCoder Begginer Contest"
+          statusCountByProblemRank={calcStatusCountByProblemRank(lengthStatusMap, lengthBorderMap, agcProblemCount, "AGC")}
+        />
       </TabPanel>
 
     </div>
-
   )
-
-  return (
-    <div>
-
-    </div>
-  );
 }
 
 export const UserPage = connect<OuterProps, InnerProps>(({userId, language}) => ({
