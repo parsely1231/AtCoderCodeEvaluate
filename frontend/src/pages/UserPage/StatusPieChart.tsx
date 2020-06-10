@@ -2,25 +2,25 @@ import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 
-import { CountingByStatus } from "../../interfaces/interfaces"
+import { StatusCount } from "../../interfaces/interfaces"
 
 
 type PieChartProps = {
-  countingByStatus: CountingByStatus
+  statusCount: StatusCount
 }
 
 // red, yellow, bluem green, brown, gray
 const COLORS = ["#FF0000","#C0C000","#0000FF","#008000", "#804000", "#808080"];
 
-export const StatusPieChart: React.FC<PieChartProps> = ({countingByStatus}) => {
+export const StatusPieChart: React.FC<PieChartProps> = ({statusCount}) => {
 
   const data = [
-    { name: "A", value: countingByStatus.A },
-    { name: 'B', value: countingByStatus.B },
-    { name: 'C', value: countingByStatus.C },
-    { name: 'D', value: countingByStatus.D },
-    { name: 'E', value: countingByStatus.E },
-    { name: 'unsolved', value: countingByStatus.unsolved },
+    { name: "A", value: statusCount.A },
+    { name: 'B', value: statusCount.B },
+    { name: 'C', value: statusCount.C },
+    { name: 'D', value: statusCount.D },
+    { name: 'E', value: statusCount.E },
+    { name: 'unsolved', value: statusCount.unsolved },
   ]
 
   return (

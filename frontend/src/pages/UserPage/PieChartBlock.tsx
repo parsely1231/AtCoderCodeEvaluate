@@ -4,15 +4,15 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import { StatusPieChart } from "./StatusPieChart";
-import { CountingByStatus } from "../../interfaces/interfaces";
+import { StatusCount } from "../../interfaces/interfaces";
 
 
-type CountingByStatusAndProblem = Map<ProblemRank, CountingByStatus>
+type StatusCountByProblemRank = Map<ProblemRank, StatusCount>
 type ProblemRank = "a" | "b" | "c" | "d" | "e" | "f"
 
 type Props = {
   title: string,
-  countingByStatusByProblemRank: CountingByStatusAndProblem
+  countingByStatusByProblemRank: StatusCountByProblemRank
 }
 
 
@@ -22,14 +22,17 @@ export const PieChartBlock: React.FC<Props> = ({title, countingByStatusByProblem
     <>
       <h2>{title}</h2>
       <div className="piecharts-line">
+
         {Array.from(countingByStatusByProblemRank).map(([problemRank, CountingByStatus]) => {
+
           return (
             <div className="piechart-box">
-              <StatusPieChart countingByStatus={CountingByStatus}/>
+              <StatusPieChart statusCount={CountingByStatus}/>
               <h3>Problem {problemRank.toUpperCase()}</h3>
             </div>
           )
         })}
+
       </div>
     </>
   )
