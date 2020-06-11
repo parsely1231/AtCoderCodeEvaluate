@@ -4,8 +4,9 @@ import {
   Route,
   Switch,
   Redirect,
-  Link,
 } from "react-router-dom";
+
+import { useLocalStorage } from "./utils/useLocalStrage"
 
 import { NavigationBar } from "./components/NavigationBar"
 import { ContestTablePage } from "./pages/TablePage/index"
@@ -30,10 +31,18 @@ console.log('APP page')
 
 
 const App = () => {
+  const [userId, setUserId] = useLocalStorage("userName", "")
+  const [language, setLanguage] = useLocalStorage("language", "C++14 (GCC 5.4.1)")
+
   return (
     <Router>
       <div className="header-container">
-        <NavigationBar/>
+        <NavigationBar
+          userName={userId}
+          language={language}
+          setUserName={setUserId}
+          setLanguage={setLanguage}
+        />
       </div>
 
       <div className="container">
@@ -49,22 +58,22 @@ const App = () => {
           />
           <Route path="/table">
             <ContestTablePage
-              userId={'parsely'}
-              language="Python3 (3.4.3)"
+              userId={userId}
+              language={language}
             />
           </Route>
 
           <Route path="/user">
             <UserPage
-              userId={'parsely'}
-              language="Python3 (3.4.3)"
+              userId={userId}
+              language={language}
               />
           </Route>
 
-          <Route exact path="/ranking/exectime">
+          <Route exact path="/ranking">
             <RankingPage
-              userId={"parsely"}
-              language="Python3 (3.4.3)"
+              userId={userId}
+              language={language}
             />
           </Route>
 

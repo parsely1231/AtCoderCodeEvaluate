@@ -1,20 +1,21 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import {Zoom, CssBaseline} from '@material-ui/core'
 
-
-import { useLocalStorage } from "../utils/useLocalStrage"
 import { languageList } from "../utils/languageList"
 
 
+type InputProps = {
+  userName: string,
+  language: string,
+  setUserName: (userName :string) => void,
+  setLanguage: (language :string) => void,
+}
 
-export const InputBox: React.FC = () => {
-  const [userName, setUserName] = useLocalStorage("userName", "");
-  const [language, setLanguage] = useLocalStorage('language', "C++14 (GCC 5.4.1)");
+
+export const InputBox: React.FC<InputProps> = ({userName, language, setUserName, setLanguage}) => {
+  
   const languages = languageList;
 
   const handleChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {

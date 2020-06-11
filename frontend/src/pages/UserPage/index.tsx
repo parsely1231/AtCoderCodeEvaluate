@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { connect, PromiseState } from "react-refetch"
 
-import { Paper, Tabs, Tab, LinearProgress, MenuItem} from '@material-ui/core';
+import { Paper, Tabs, Tab, LinearProgress } from '@material-ui/core';
 
 import { cachedUserSubmissions, cachedExecBorder, cachedLengthBorder, cachedProblems } from "../../utils/cachedApiClient"
 import { Submission, BorderData, Problem, StatusCount, ContestType } from "../../interfaces/interfaces"

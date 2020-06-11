@@ -75,7 +75,6 @@ export const ContestTable: React.FC<TableProps> =
   const lengthBorderMedianList = useMemo(() => [...lengthBorderMap.values()].map(border => border.rank_c).sort((a, b)=> b-a), [lengthBorderMap])
   const lengthBorderQuantiles = useMemo(() => quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100]), [lengthBorderMap])
   
-  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[lengthBorderMedianList.length-1]) / 8)
   const lowerContestType = contestType.toLowerCase()
   const filterdContests = useMemo(() => contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType), [contestType, contests])
 

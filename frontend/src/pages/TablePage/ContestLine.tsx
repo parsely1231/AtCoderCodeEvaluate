@@ -33,7 +33,7 @@ function calculateRank(status: number | undefined, border: BorderData | undefine
 
 
 export const ContestLine: React.FC<ContestLineProps> =
- ({ contestId, problems, baseProblemCount, showCodeSize,showExecTime,
+ ({ contestId, problems, baseProblemCount, showCodeSize, showExecTime,
    execBorderMap, execStatusMap, lengthBorderMap, lengthStatusMap, lengthBorderQuantiles }) => {
 
   const shortage: number = baseProblemCount - problems.length
@@ -67,7 +67,7 @@ export const ContestLine: React.FC<ContestLineProps> =
       }
 
       {Array(shortage).fill(0).map((_, index) => {
-        return <TableCell key={index} component="th" scope="row"/>
+        return <TableCell key={"blank"+index} component="th" scope="row"/>
        })}
     </TableRow>
   )
