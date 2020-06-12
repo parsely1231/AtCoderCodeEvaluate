@@ -14,10 +14,16 @@ export const PageLinks = () => {
         <Button href="#/user">
           User
         </Button>
+        
+        <Button href="#/ranking">
+          Ranking
+        </Button>
 
         <Button href="#/">
           Home
         </Button>
+
+
       </ButtonGroup>
     </div>
   )

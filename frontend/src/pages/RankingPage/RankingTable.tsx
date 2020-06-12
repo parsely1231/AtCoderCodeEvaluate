@@ -45,7 +45,7 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
       if (a[orderBy] > b[orderBy]) return -1
       else return 1
     })
-    return rankingEntries.filter((entry) => entry.ac_count >= acFilter);
+    return filterdEntries;
   }, [rankingEntries, acFilter, orderBy])
 
   const orderedRanking = useMemo(() => {

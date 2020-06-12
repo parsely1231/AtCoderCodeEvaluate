@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useMemo, useEffect, ReactElement } from "react";
-import { Button, ButtonGroup ,Checkbox, FormControlLabel, Table, TableBody, TableContainer } from "@material-ui/core"
+import React, { useMemo } from "react";
+import { Table, TableBody, TableContainer, TablePagination } from "@material-ui/core"
 // import { FixedSizeList } from "react-window"
 
-import { ContestsWithProblems, Contest, BorderData, ContestType, Submission } from "../../interfaces/interfaces"
+import { Contest, BorderData, ContestType, Submission } from "../../interfaces/interfaces"
 
 
 import { ContestLine } from "./ContestLine"
@@ -65,6 +65,17 @@ function toCodeStatusMap(submissions: Submission[]): Map<string, number>[] {
 
 export const ContestTable: React.FC<TableProps> = 
 ({contestType, contests, execBorderMap, lengthBorderMap, submissions, showCodeSize, showExecTime}) => {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(50);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const title = getTitle(contestType);
   const baseProblemCount: number 
@@ -75,7 +86,6 @@ export const ContestTable: React.FC<TableProps> =
   const lengthBorderMedianList = useMemo(() => [...lengthBorderMap.values()].map(border => border.rank_c).sort((a, b)=> b-a), [lengthBorderMap])
   const lengthBorderQuantiles = useMemo(() => quantiles(lengthBorderMedianList, [0.3, 1, 3, 7, 15, 30, 50, 100]), [lengthBorderMap])
   
-  const mod = Math.ceil((lengthBorderMedianList[0] - lengthBorderMedianList[lengthBorderMedianList.length-1]) / 8)
   const lowerContestType = contestType.toLowerCase()
   const filterdContests = useMemo(() => contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType), [contestType, contests])
 
@@ -84,13 +94,22 @@ export const ContestTable: React.FC<TableProps> =
   return (
     <div className="contest-table">
       <h2>{title}</h2>
+      <TablePagination
+          rowsPerPageOptions={[50, 100, 200]}
+          component="div"
+          count={filterdContests.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       <TableContainer>
         <Table>
           <ContestTableHeader contestType={contestType} />
 
           <TableBody>
 
-            {filterdContests.map((contest) => {
+            {filterdContests.slice(page*rowsPerPage, (page+1)*rowsPerPage).map((contest) => {
               return (
                 <ContestLine
                   key={contest.contestId}
@@ -110,6 +129,15 @@ export const ContestTable: React.FC<TableProps> =
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+          rowsPerPageOptions={[50, 100, 200]}
+          component="div"
+          count={filterdContests.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={handleChangePage}
+          onChangeRowsPerPage={handleChangeRowsPerPage}
+        />
     </div>
 
   );

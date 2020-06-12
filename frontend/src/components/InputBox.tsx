@@ -1,25 +1,36 @@
-import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import React, {useState} from 'react';
+
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import {Zoom, CssBaseline} from '@material-ui/core'
 
-
-import { useLocalStorage } from "../utils/useLocalStrage"
 import { languageList } from "../utils/languageList"
 
 
+type InputProps = {
+  userName: string,
+  language: string,
+  setUserName: (userName :string) => void,
+  setLanguage: (language :string) => void,
+}
 
-export const InputBox: React.FC = () => {
-  const [userName, setUserName] = useLocalStorage("userName", "");
-  const [language, setLanguage] = useLocalStorage('language', "C++14 (GCC 5.4.1)");
+
+export const InputBox: React.FC<InputProps> = ({userName, language, setUserName, setLanguage}) => {
+  const [inputValue, setInputValue] = useState(userName)
+  
   const languages = languageList;
 
-  const handleChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(event.target.value);
+  const handleChageInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value)
+  }
+  const handleEnterInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setUserName(inputValue)
+    }
   };
+
+  const handleBlurInput = (event: React.FocusEvent<HTMLInputElement>) => {
+    setUserName(event.target.value)
+  }
 
   const handleChangeLanguage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLanguage(event.target.value);
@@ -30,8 +41,10 @@ export const InputBox: React.FC = () => {
           <TextField
             id="user-input" 
             label="UserName" 
-            onChange={handleChangeUserName}
-            defaultValue={userName}
+            onChange={handleChageInput}
+            onKeyPress={handleEnterInput}
+            onBlur={handleBlurInput}
+            value={inputValue}
           />
           <TextField
             id="language-input"

@@ -6,66 +6,32 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import {Link, Zoom, CssBaseline, useScrollTrigger} from '@material-ui/core'
 
 import { MyLinksMenu } from "./MyLinksMenu"
-import { RankingsMenu } from "./RankingsMenu"
 import { InputBox } from "./InputBox"
 import { PageLinks } from "./PageLinks"
 
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      position: 'fixed',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
-);
-
-interface ScrollTopProps {
-  window: () => Window;
+type Props = {
+  userName: string,
+  language: string,
+  setUserName: (userName :string) => void,
+  setLanguage: (language :string) => void,
 }
 
-const ScrollTop: React.FC<ScrollTopProps> = ({window}) => {
-  const classes = useStyles();
-  // Note that you normally won't need to set the window ref as useScrollTrigger
-  // will default to window.
-  // This is only being set here because the demo is in an iframe.
-  const trigger = useScrollTrigger({
-    target: window ? window() : undefined,
-    disableHysteresis: true,
-    threshold: 100,
-  });
-
-  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const anchor = ((event.target as HTMLDivElement).ownerDocument || document).querySelector(
-      '#back-to-top-anchor',
-    );
-
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
-
-  return (
-    <Zoom in={trigger}>
-      <div onClick={handleClick} role="presentation" className={classes.root}>
-      </div>
-    </Zoom>
-  );
-}
-
-export const NavigationBar: React.FC = () => {
-  const win = window
+export const NavigationBar: React.FC<Props> = ({userName, language, setUserName, setLanguage}) => {
   return (
     <div>
       <AppBar id="back-to-top-anchor">
         <Toolbar>
           <Typography variant="h6">AtCoder Code Evaluate</Typography>
-          <RankingsMenu/>
           <MyLinksMenu/>
         </Toolbar>
         <div className="top-menu">
-          <InputBox/>
+          <InputBox
+            userName={userName}
+            language={language}
+            setUserName={setUserName}
+            setLanguage={setLanguage}
+          />
           <PageLinks/>
         </div>
       </AppBar>

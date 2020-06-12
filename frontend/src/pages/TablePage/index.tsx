@@ -23,7 +23,7 @@ interface InnerProps extends OuterProps {
 
 
 export const InnerContestTablePage: React.FC<InnerProps> = 
-({contestsWithProblemsFetch, submissionsFetch, execBorderFetch, lengthBorderFetch}) => {
+({contestsWithProblemsFetch, submissionsFetch, execBorderFetch, lengthBorderFetch, language}) => {
   const [contestType, setContestType]: [ContestType, Function] = useState("ABC")
   const [showCodeSize, setShowCodeSize] = useState(true);
   const [showExecTime, setShowExecTime] = useState(true);
@@ -55,7 +55,7 @@ export const InnerContestTablePage: React.FC<InnerProps> =
     : new Map()
 
   const submissions = submissionsFetch.fulfilled
-    ? submissionsFetch.value
+    ? submissionsFetch.value.filter((submission) => submission.language === language)
     : []
 
   return (
