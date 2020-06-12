@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { connect, PromiseState } from "react-refetch"
 
-import { Paper, Tabs, Tab, LinearProgress } from '@material-ui/core';
+import { Paper, Tabs, Tab, LinearProgress} from '@material-ui/core';
 
 import { cachedUserSubmissions, cachedExecBorder, cachedLengthBorder, cachedProblems } from "../../utils/cachedApiClient"
 import { Submission, BorderData, Problem, StatusCount, ContestType } from "../../interfaces/interfaces"
@@ -165,7 +165,7 @@ const InnerUserPage: React.FC<InnerProps> =
 
   const submissions = 
     submissionsFetch.fulfilled
-      ? submissionsFetch.value
+      ? submissionsFetch.value.filter((submission) => submission.language === language)
       : []
   
   const execBorderMap =
@@ -183,12 +183,12 @@ const InnerUserPage: React.FC<InnerProps> =
       ? problemsFetch.value
       : []
 
-  const execStatusMap = useMemo(() => toCodeStatusMap(submissions, "execution_time"), [submissions])
-  const lengthStatusMap = useMemo(() => toCodeStatusMap(submissions, "length"), [submissions])
+  const execStatusMap = useMemo(() => toCodeStatusMap(submissions, "execution_time"), [submissions, language])
+  const lengthStatusMap = useMemo(() => toCodeStatusMap(submissions, "length"), [submissions, language])
 
-  const abcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "abc")), [submissions])
-  const arcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "arc")), [submissions])
-  const agcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "agc")), [submissions])
+  const abcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "abc")), [problems])
+  const arcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "arc")), [problems])
+  const agcProblemCount = useMemo(() => calcProblemCountByRank(problems.filter((problem) => problem.id.slice(0, 3) === "agc")), [problems])
   
   const [statusType, setStatusType] = useState('Execution Time')
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -15,12 +15,22 @@ type InputProps = {
 
 
 export const InputBox: React.FC<InputProps> = ({userName, language, setUserName, setLanguage}) => {
+  const [inputValue, setInputValue] = useState(userName)
   
   const languages = languageList;
 
-  const handleChangeUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(event.target.value);
+  const handleChageInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value)
+  }
+  const handleEnterInput = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      setUserName(inputValue)
+    }
   };
+
+  const handleBlurInput = (event: React.FocusEvent<HTMLInputElement>) => {
+    setUserName(event.target.value)
+  }
 
   const handleChangeLanguage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLanguage(event.target.value);
@@ -31,8 +41,10 @@ export const InputBox: React.FC<InputProps> = ({userName, language, setUserName,
           <TextField
             id="user-input" 
             label="UserName" 
-            onChange={handleChangeUserName}
-            defaultValue={userName}
+            onChange={handleChageInput}
+            onKeyPress={handleEnterInput}
+            onBlur={handleBlurInput}
+            value={inputValue}
           />
           <TextField
             id="language-input"
