@@ -70,6 +70,7 @@ export function calcStatusCountByProblemRank(
   const selected = contestType.toLowerCase();
   const statusCountByProblemRank: StatusCountByProblemRank = new Map();
   
+  // initialize
   problemCountByRank.forEach((count, problemRank) => {
     const statusCount: StatusCount = {A: 0, B: 0, C: 0, D: 0, E: 0, unsolved: count}
     statusCountByProblemRank.set(problemRank, statusCount)
@@ -106,7 +107,7 @@ export function calcStatusCountByProblemRank(
   return statusCountByProblemRank;
 }
 
-function quantile(sortedArray: number[], percentile: number) {
+export function quantile(sortedArray: number[], percentile: number) {
   const index = percentile/100 * (sortedArray.length-1);
   if (Math.floor(index) == index) return sortedArray[index];
 
