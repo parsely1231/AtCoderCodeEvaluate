@@ -1,19 +1,33 @@
-import { Submission, BorderData, Problem, StatusCount, ContestType } from "../../interfaces/interfaces"
-
+import { Submission, BorderData, Problem, StatusCount, ContestType, CodeStatusMap, ProblemId } from "../interfaces/interfaces"
 
 
 type ProblemRank = "a" | "b" | "c" | "d" | "e" | "f"
 type ProblemCountByRank = Map<ProblemRank, number>
+type StatusType = "execution_time" | "length"
 
 
-function calcProblemCountByRank(problems: Problem[]) {
+export function toCodeStatusMap(submissions: Submission[], statusType: StatusType): CodeStatusMap {
+  const statusMap: CodeStatusMap = new Map();
+
+  submissions.forEach((submission) => {
+    const problem = submission.problem_id;
+    const newValue = submission[statusType];
+    const prevValue = statusMap.get(problem);
+
+    if (prevValue == undefined || newValue < prevValue) {
+      statusMap.set(problem, newValue);
+    }
+  })
+  return statusMap
+}
+
+function countUp(countByRank: ProblemCountByRank, problemRank: ProblemRank) {
+  const preCount = countByRank.get(problemRank) || 0
+  countByRank.set(problemRank, preCount + 1)
+}
+
+export function calcProblemCountByRank(problems: Problem[]) {
   const countByRank: ProblemCountByRank = new Map();
-
-
-  function countUp(count: ProblemCountByRank, problemRank: ProblemRank) {
-    const preCount = count.get(problemRank) || 0
-    count.set(problemRank, preCount + 1)
-  }
 
   for (const problem of problems) {
     const contestType = problem.id.slice(0, 3);
@@ -35,9 +49,7 @@ function calcProblemCountByRank(problems: Problem[]) {
   return countByRank;
 }
 
-
-
-function calculateRank(status: number | undefined, border: BorderData | undefined): keyof StatusCount {
+export function calculateRank(status: number | undefined, border: BorderData | undefined): keyof StatusCount {
   if (status === undefined) return "unsolved";
   if (border === undefined) return "A";
   if (status <= border.rank_a) return "A";
@@ -49,8 +61,7 @@ function calculateRank(status: number | undefined, border: BorderData | undefine
 
 type StatusCountByProblemRank = Map<ProblemRank, StatusCount>
 
-
-function calcStatusCountByProblemRank(
+export function calcStatusCountByProblemRank(
   codeStatus: CodeStatusMap,
   borderMap: Map<ProblemId, BorderData>,
   problemCountByRank: ProblemCountByRank,
@@ -93,4 +104,18 @@ function calcStatusCountByProblemRank(
   })
 
   return statusCountByProblemRank;
+}
+
+function quantile(sortedArray: number[], percentile: number) {
+  const index = percentile/100 * (sortedArray.length-1);
+  if (Math.floor(index) == index) return sortedArray[index];
+
+  const i = Math.floor(index)
+  const fraction = index - i;
+  const result = sortedArray[i] + (sortedArray[i+1] - sortedArray[i]) * fraction;
+  return result;
+}
+
+export function quantiles(sortedArray: number[], percentiles: number[]) {
+  return percentiles.map((percentile) => quantile(sortedArray, percentile))
 }

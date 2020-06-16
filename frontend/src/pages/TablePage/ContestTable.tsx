@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
 import { Table, TableBody, TableContainer, TablePagination } from "@material-ui/core"
-// import { FixedSizeList } from "react-window"
 
 import { Contest, BorderData, ContestType, Submission } from "../../interfaces/interfaces"
-
+import { toCodeStatusMap, quantiles } from "../../utils/calculate"
 
 import { ContestLine } from "./ContestLine"
 import { ContestTableHeader } from "./ContestTableHeader"
@@ -25,42 +24,6 @@ function getTitle(contestType: ContestType): string {
     case "ARC": return "AtCoder Regular Contest";
     case "AGC": return "AtCoder Grand Contest";
   }
-}
-
-function quantile(sortedArray: number[], percentile: number) {
-  const index = percentile/100 * (sortedArray.length-1);
-  if (Math.floor(index) == index) return sortedArray[index];
-
-  const i = Math.floor(index)
-  const fraction = index - i;
-  const result = sortedArray[i] + (sortedArray[i+1] - sortedArray[i]) * fraction;
-  return result;
-}
-
-function quantiles(sortedArray: number[], percentiles: number[]) {
-  return percentiles.map((percentile) => quantile(sortedArray, percentile))
-}
-
-function toCodeStatusMap(submissions: Submission[]): Map<string, number>[] {
-  const execStatusMap: Map<string, number> = new Map();
-  const lengthStatusMap: Map<string, number> = new Map();
-
-  submissions.forEach((submission) => {
-    const problem = submission.problem_id;
-    const newExec = submission.execution_time;
-    const newLength = submission.length;
-
-    const prevExec = execStatusMap.get(problem);
-    const prevLength = lengthStatusMap.get(problem);
-
-    if (prevExec == undefined || newExec < prevExec) {
-      execStatusMap.set(problem, newExec);
-    }
-    if (prevLength == undefined || newLength < prevLength) {
-      lengthStatusMap.set(problem, newLength);
-    }
-  })
-  return [execStatusMap, lengthStatusMap];
 }
 
 export const ContestTable: React.FC<TableProps> = 
@@ -89,7 +52,8 @@ export const ContestTable: React.FC<TableProps> =
   const lowerContestType = contestType.toLowerCase()
   const filterdContests = useMemo(() => contests.filter((contest) => contest.contestId.slice(0, 3) === lowerContestType), [contestType, contests])
 
-  const [execStatusMap, lengthStatusMap] = useMemo(() => toCodeStatusMap(submissions), [submissions])
+  const execStatusMap = useMemo(() => toCodeStatusMap(submissions, "execution_time"), [submissions])
+  const lengthStatusMap = useMemo(() => toCodeStatusMap(submissions, "length"), [submissions])
 
   return (
     <div className="contest-table">
@@ -102,13 +66,12 @@ export const ContestTable: React.FC<TableProps> =
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+      />
       <TableContainer>
         <Table>
           <ContestTableHeader contestType={contestType} />
 
           <TableBody>
-
             {filterdContests.slice(page*rowsPerPage, (page+1)*rowsPerPage).map((contest) => {
               return (
                 <ContestLine
@@ -137,8 +100,7 @@ export const ContestTable: React.FC<TableProps> =
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+      />
     </div>
-
   );
 }

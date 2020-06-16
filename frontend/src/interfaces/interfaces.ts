@@ -1,12 +1,12 @@
-export interface Problem {
-  id: string;
-  title: string;
-  contest_id: string;
+export type Problem = {
+  id: string,
+  title: string,
+  contest_id: string,
 }
 
-export interface Contest {
-  contestId: string;
-  problems: Problem[]
+export type Contest = {
+  contestId: string,
+  problems: Problem[],
 }
 
 export type ContestType = "ABC" | "ARC" | "AGC";
@@ -14,14 +14,9 @@ export type ContestType = "ABC" | "ARC" | "AGC";
 type ContestId = string
 export type ContestsWithProblems = Map<ContestId, Problem[]>
 
-export interface EntryData {
-  userId: string;
-  score: number;
-}
-
-export interface AggregatedData {
-  title: string;  //ExecTime or CodeSize and Total or Average
-  data: EntryData[]
+export type EntryData = {
+  userId: string,
+  score: number,
 }
 
 export type RankingEntry = {
@@ -37,23 +32,23 @@ export type RankingEntry = {
 export type RankingOrderBy = keyof RankingEntry
 
 
-export interface userData {
-  userId: string;
-  totalScore: number;
-  averageScore: number;
+export type userData = {
+  userId: string,
+  totalScore: number,
+  averageScore: number,
 }
 
-export interface Submission {
-  id: string;
-  epoch_second: string;
-  problem_id: string;
-  contest_id: string;
-  user_id: string;
-  language: string;
-  poing: number;
-  length: number;
-  result: string;
-  execution_time: number;
+export type Submission = {
+  id: string,
+  epoch_second: string,
+  problem_id: string,
+  contest_id: string,
+  user_id: string,
+  language: string,
+  poing: number,
+  length: number,
+  result: string,
+  execution_time: number,
 }
 
 export interface BorderData {
@@ -75,3 +70,7 @@ export type StatusCount = {
   E: number
   unsolved: number
 }
+
+export type ProblemId = string
+export type CodeStatusMap = Map<ProblemId, number>
+

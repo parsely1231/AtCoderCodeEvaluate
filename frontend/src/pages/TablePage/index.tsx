@@ -1,4 +1,4 @@
-import React, {useMemo, useCallback, useState} from 'react';
+import React, { useCallback, useState} from 'react';
 import { connect, PromiseState } from "react-refetch"
 
 import { Button, ButtonGroup, Checkbox, FormControlLabel } from '@material-ui/core';
