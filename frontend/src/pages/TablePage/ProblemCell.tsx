@@ -1,12 +1,11 @@
-import React from "react"
-import { TableCell } from "@material-ui/core"
+import React from "react";
+import { TableCell } from "@material-ui/core";
 
-import { Problem } from "../../interfaces/interfaces"
+import { Problem } from "../../interfaces/interfaces";
 
-import { ProblemLink } from "./ProblemLink"
-import { CodeSizeSquare } from "./CodeSizeSquare"
-import { ExecTimeCircle } from "./ExecTimeCircle"
-
+import { ProblemLink } from "./ProblemLink";
+import { CodeSizeSquare } from "./CodeSizeSquare";
+import { ExecTimeCircle } from "./ExecTimeCircle";
 
 interface ProblemCellProps {
   problem: Problem;
@@ -19,26 +18,30 @@ interface ProblemCellProps {
   showExecTime: boolean;
 }
 
-export const ProblemCell : React.FC<ProblemCellProps> = 
-({ problem, execBorderMedian, execUserRank, lengthBorderMedian, 
-  lengthBorderQuantiles, lengthUserRank, showCodeSize, showExecTime }) => {
-
+export const ProblemCell: React.FC<ProblemCellProps> = ({
+  problem,
+  execBorderMedian,
+  execUserRank,
+  lengthBorderMedian,
+  lengthBorderQuantiles,
+  lengthUserRank,
+  showCodeSize,
+  showExecTime
+}) => {
   return (
-        <TableCell>
-          <CodeSizeSquare
-            medianBorder={lengthBorderMedian}
-            quantiles={lengthBorderQuantiles}
-            showCodeSize={showCodeSize}
-            lengthUserRank={lengthUserRank}
-          />
-          <ExecTimeCircle
-            medianBorder={execBorderMedian}
-            showExecTime={showExecTime}
-            execUserRank={execUserRank}
-          />
-          <ProblemLink
-            problem={problem}
-          />
-        </TableCell>
-  )
-}
+    <TableCell>
+      <CodeSizeSquare
+        medianBorder={lengthBorderMedian}
+        quantiles={lengthBorderQuantiles}
+        showCodeSize={showCodeSize}
+        lengthUserRank={lengthUserRank}
+      />
+      <ExecTimeCircle
+        medianBorder={execBorderMedian}
+        showExecTime={showExecTime}
+        execUserRank={execUserRank}
+      />
+      <ProblemLink problem={problem} />
+    </TableCell>
+  );
+};

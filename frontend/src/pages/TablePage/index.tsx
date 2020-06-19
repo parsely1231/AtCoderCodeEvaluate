@@ -1,17 +1,33 @@
-import React, { useCallback, useState} from 'react';
-import { connect, PromiseState } from "react-refetch"
+import React, { useCallback, useState } from "react";
+import { connect, PromiseState } from "react-refetch";
 
-import { Button, ButtonGroup, Checkbox, FormControlLabel } from '@material-ui/core';
+import {
+  Button,
+  ButtonGroup,
+  Checkbox,
+  FormControlLabel
+} from "@material-ui/core";
 
-import { cachedContestsWithProblems, cachedExecBorder, cachedLengthBorder, cachedUserSubmissions } from "../../utils/cachedApiClient"
-import { ContestsWithProblems, Submission, BorderData, ContestType, Problem, Contest } from "../../interfaces/interfaces"
+import {
+  cachedContestsWithProblems,
+  cachedExecBorder,
+  cachedLengthBorder,
+  cachedUserSubmissions
+} from "../../utils/cachedApiClient";
+import {
+  ContestsWithProblems,
+  Submission,
+  BorderData,
+  ContestType,
+  Problem,
+  Contest
+} from "../../interfaces/interfaces";
 
-import { ContestTable } from "./ContestTable"
+import { ContestTable } from "./ContestTable";
 
-
-type OuterProps = {
-  userId: string
-  language: string
+interface OuterProps {
+  userId: string;
+  language: string;
 }
 
 interface InnerProps extends OuterProps {
@@ -21,64 +37,98 @@ interface InnerProps extends OuterProps {
   lengthBorderFetch: PromiseState<Map<string, BorderData>>;
 }
 
-
-export const InnerContestTablePage: React.FC<InnerProps> = 
-({contestsWithProblemsFetch, submissionsFetch, execBorderFetch, lengthBorderFetch, language}) => {
-  const [contestType, setContestType]: [ContestType, Function] = useState("ABC")
+export const InnerContestTablePage: React.FC<InnerProps> = ({
+  contestsWithProblemsFetch,
+  submissionsFetch,
+  execBorderFetch,
+  lengthBorderFetch,
+  language
+}) => {
+  const [contestType, setContestType]: [ContestType, Function] = useState(
+    "ABC"
+  );
   const [showCodeSize, setShowCodeSize] = useState(true);
   const [showExecTime, setShowExecTime] = useState(true);
 
-  const handleShowCodeSize = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowCodeSize(event.target.checked)
-  }, [])
+  const handleShowCodeSize = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setShowCodeSize(event.target.checked);
+    },
+    []
+  );
 
-  const handleShowExecTime = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowExecTime(event.target.checked)
-  }, [])
+  const handleShowExecTime = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setShowExecTime(event.target.checked);
+    },
+    []
+  );
 
   const contests: Contest[] = contestsWithProblemsFetch.fulfilled
-    ? [...contestsWithProblemsFetch.value.entries()].reverse().map((entry): Contest => {
-      const [contestId, problems]: [string, Problem[]] = entry
-      return {
-        contestId: contestId,
-        problems: problems
-      }
-    })
-    : []
-  
+    ? [...contestsWithProblemsFetch.value.entries()].reverse().map(
+        (entry): Contest => {
+          const [contestId, problems]: [string, Problem[]] = entry;
+          return {
+            contestId,
+            problems
+          };
+        }
+      )
+    : [];
+
   const execBorderMap = execBorderFetch.fulfilled
     ? execBorderFetch.value
-    : new Map()
+    : new Map();
 
   const lengthBorderMap = lengthBorderFetch.fulfilled
     ? lengthBorderFetch.value
-    : new Map()
+    : new Map();
 
   const submissions = submissionsFetch.fulfilled
-    ? submissionsFetch.value.filter((submission) => submission.language === language)
-    : []
+    ? submissionsFetch.value.filter(
+        submission => submission.language === language
+      )
+    : [];
 
   return (
     <div className="contest-table-page">
       <div>
         <FormControlLabel
-            value="showCodeSize"
-            control={<Checkbox color="primary" checked={showCodeSize} onChange={handleShowCodeSize}/>}
-            label="ShowCodeSize"
-            labelPlacement="start"
+          value="showCodeSize"
+          control={
+            <Checkbox
+              color="primary"
+              checked={showCodeSize}
+              onChange={handleShowCodeSize}
+            />
+          }
+          label="ShowCodeSize"
+          labelPlacement="start"
         />
         <FormControlLabel
-            value="showExecTime"
-            control={<Checkbox color="primary" checked={showExecTime} onChange={handleShowExecTime}/>}
-            label="ShowExecTime"
-            labelPlacement="start"
+          value="showExecTime"
+          control={
+            <Checkbox
+              color="primary"
+              checked={showExecTime}
+              onChange={handleShowExecTime}
+            />
+          }
+          label="ShowExecTime"
+          labelPlacement="start"
         />
       </div>
       <div>
         <ButtonGroup>
-          <Button variant="contained" onClick={() => setContestType("ABC")}>ABC</Button>
-          <Button variant="contained" onClick={() => setContestType("ARC")}>ARC</Button>
-          <Button variant="contained" onClick={() => setContestType("AGC")}>AGC</Button>
+          <Button variant="contained" onClick={() => setContestType("ABC")}>
+            ABC
+          </Button>
+          <Button variant="contained" onClick={() => setContestType("ARC")}>
+            ARC
+          </Button>
+          <Button variant="contained" onClick={() => setContestType("AGC")}>
+            AGC
+          </Button>
         </ButtonGroup>
       </div>
 
@@ -92,29 +142,27 @@ export const InnerContestTablePage: React.FC<InnerProps> =
         submissions={submissions}
       />
     </div>
-
   );
-}
+};
 
-export const ContestTablePage = connect<OuterProps, InnerProps>(({userId, language}) => ({
-  contestsWithProblemsFetch: {
-    comparison: null,
-    value: (): Promise<ContestsWithProblems> =>
-      cachedContestsWithProblems()
-  },
-  submissionsFetch: {
-    comparison: [userId],
-    value: (): Promise<Submission[]> => 
-      cachedUserSubmissions(userId)
-  },
-  lengthBorderFetch: {
-    comparison: [language],
-    value: (): Promise<Map<string, BorderData>> => 
-      cachedLengthBorder(language)
-  },
-  execBorderFetch: {
-    comparison: [language],
-    value: (): Promise<Map<string, BorderData>> =>
-      cachedExecBorder(language)
-  },
-}))(InnerContestTablePage);
+export const ContestTablePage = connect<OuterProps, InnerProps>(
+  ({ userId, language }) => ({
+    contestsWithProblemsFetch: {
+      comparison: null,
+      value: (): Promise<ContestsWithProblems> => cachedContestsWithProblems()
+    },
+    submissionsFetch: {
+      comparison: [userId],
+      value: (): Promise<Submission[]> => cachedUserSubmissions(userId)
+    },
+    lengthBorderFetch: {
+      comparison: [language],
+      value: (): Promise<Map<string, BorderData>> =>
+        cachedLengthBorder(language)
+    },
+    execBorderFetch: {
+      comparison: [language],
+      value: (): Promise<Map<string, BorderData>> => cachedExecBorder(language)
+    }
+  })
+)(InnerContestTablePage);

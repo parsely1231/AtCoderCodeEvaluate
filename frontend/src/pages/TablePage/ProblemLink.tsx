@@ -1,9 +1,9 @@
-import React from "react"
+import React from "react";
 
-import { Problem } from "../../interfaces/interfaces"
+import { Problem } from "../../interfaces/interfaces";
 
 interface ProblemLinkProps {
-  problem: Problem
+  problem: Problem;
 }
 
 // const getColorClass = (lengthAve: number): string => {
@@ -26,21 +26,17 @@ interface ProblemLinkProps {
 //   }
 // }
 
+const ATCODER_CONTEST_BASE_URL: string = "https://atcoder.jp/contests/";
 
-const ATCODER_CONTEST_BASE_URL:string = "https://atcoder.jp/contests/"
-
-export const ProblemLink = React.memo<ProblemLinkProps>(({problem}) => {
+export const ProblemLink = React.memo<ProblemLinkProps>(({ problem }) => {
   const contestId: string = problem.contest_id;
   const problemId: string = problem.id;
-  const url: string = `${ATCODER_CONTEST_BASE_URL+contestId}/tasks/${problemId}`;
+  const url: string = `${ATCODER_CONTEST_BASE_URL +
+    contestId}/tasks/${problemId}`;
   // const colorClass: string = getColorClass(props.lengthAve);
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener"
-    >
+    <a href={url} target="_blank" rel="noopener">
       {problem.title}
     </a>
-  )
-})
+  );
+});

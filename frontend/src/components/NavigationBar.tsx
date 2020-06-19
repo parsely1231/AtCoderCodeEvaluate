@@ -1,29 +1,33 @@
-import React, { Children } from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import {Link, Zoom, CssBaseline, useScrollTrigger} from '@material-ui/core'
+import React, { Children } from "react";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import { Link, Zoom, CssBaseline, useScrollTrigger } from "@material-ui/core";
 
-import { MyLinksMenu } from "./MyLinksMenu"
-import { InputBox } from "./InputBox"
-import { PageLinks } from "./PageLinks"
+import { MyLinksMenu } from "./MyLinksMenu";
+import { InputBox } from "./InputBox";
+import { PageLinks } from "./PageLinks";
 
-
-type Props = {
-  userName: string,
-  language: string,
-  setUserName: (userName :string) => void,
-  setLanguage: (language :string) => void,
+interface Props {
+  userName: string;
+  language: string;
+  setUserName: (userName: string) => void;
+  setLanguage: (language: string) => void;
 }
 
-export const NavigationBar: React.FC<Props> = ({userName, language, setUserName, setLanguage}) => {
+export const NavigationBar: React.FC<Props> = ({
+  userName,
+  language,
+  setUserName,
+  setLanguage
+}) => {
   return (
     <div>
       <AppBar id="back-to-top-anchor">
         <Toolbar>
           <Typography variant="h6">AtCoder Code Evaluate</Typography>
-          <MyLinksMenu/>
+          <MyLinksMenu />
         </Toolbar>
         <div className="top-menu">
           <InputBox
@@ -32,9 +36,9 @@ export const NavigationBar: React.FC<Props> = ({userName, language, setUserName,
             setUserName={setUserName}
             setLanguage={setLanguage}
           />
-          <PageLinks/>
+          <PageLinks />
         </div>
       </AppBar>
     </div>
   );
-}
+};

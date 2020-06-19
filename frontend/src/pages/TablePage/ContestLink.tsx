@@ -1,12 +1,12 @@
 import React from "react";
 
 interface ContestLinkProps {
-  contestId: string
+  contestId: string;
 }
 
-const ATCODER_CONTEST_BASE_URL:string = "https://atcoder.jp/contests/"
+const ATCODER_CONTEST_BASE_URL: string = "https://atcoder.jp/contests/";
 
-export const ContestLink =  React.memo<ContestLinkProps>((props) => {
+export const ContestLink = React.memo<ContestLinkProps>(props => {
   return (
     <a
       className="contest-link"
@@ -16,5 +16,5 @@ export const ContestLink =  React.memo<ContestLinkProps>((props) => {
     >
       {props.contestId.toUpperCase()}
     </a>
-  )
-})
+  );
+});

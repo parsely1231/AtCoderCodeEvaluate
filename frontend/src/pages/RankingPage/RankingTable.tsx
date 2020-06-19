@@ -1,29 +1,38 @@
 import React, { useMemo } from "react";
-import { 
-  Table, TableBody, TableCell,
-  TableContainer, TableHead, TablePagination, TableRow, Paper } from "@material-ui/core";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  Paper
+} from "@material-ui/core";
 
-import { RankingEntry, RankingOrderBy } from "../../interfaces/interfaces"
+import { RankingEntry, RankingOrderBy } from "../../interfaces/interfaces";
 
-
-
-type RankingTableProps = {
-  userId: string,
-  language: string,
-  rankingEntries: Required<RankingEntry>[],
-  acFilter: number,
-  orderBy: RankingOrderBy,
+interface RankingTableProps {
+  userId: string;
+  language: string;
+  rankingEntries: Required<RankingEntry>[];
+  acFilter: number;
+  orderBy: RankingOrderBy;
 }
 
-
-type RankingRowProps = {
-  rank: number,
-  userId: string,
-  score: number | string,
+interface RankingRowProps {
+  rank: number;
+  userId: string;
+  score: number | string;
 }
 
-
-export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, rankingEntries, acFilter, orderBy }) => {
+export const RankingTable: React.FC<RankingTableProps> = ({
+  userId,
+  language,
+  rankingEntries,
+  acFilter,
+  orderBy
+}) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -31,27 +40,38 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const title: string = orderBy.toString().split("_").join(" ");
+  const title: string = orderBy
+    .toString()
+    .split("_")
+    .join(" ");
 
   const sortedFilteredEntries = useMemo(() => {
-    const filterdEntries = rankingEntries.filter((entry) => entry.ac_count >= acFilter);
+    const filterdEntries = rankingEntries.filter(
+      entry => entry.ac_count >= acFilter
+    );
     filterdEntries.sort((a, b) => {
       // Desc Sort
-      if (a[orderBy] > b[orderBy]) return -1
-      else return 1
-    })
+      if (a[orderBy] > b[orderBy]) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
     return filterdEntries;
-  }, [rankingEntries, acFilter, orderBy])
+  }, [rankingEntries, acFilter, orderBy]);
 
   const orderedRanking = useMemo(() => {
     // ソートされたEntriesから表示するスコアを抜き出す。同じ値の人は同じ順位になるように調整する
     return sortedFilteredEntries.reduce((ranking, entry, index) => {
-      const last = ranking.length === 0 ? undefined : ranking[ranking.length - 1];
+      const last =
+        ranking.length === 0 ? undefined : ranking[ranking.length - 1];
       const nextEntry =
         last && last.score === entry[orderBy]
           ? {
@@ -67,58 +87,62 @@ export const RankingTable: React.FC<RankingTableProps> = ({ userId, language, ra
       ranking.push(nextEntry);
       return ranking;
     }, [] as RankingRowProps[]);
-  }, [rankingEntries, acFilter, orderBy])
+  }, [rankingEntries, acFilter, orderBy]);
 
-    const yourIndex = orderedRanking.findIndex(entry => entry.userId === userId)
-    const yourRank = yourIndex === -1 
-      ? "No Entry" 
-      : orderedRanking[yourIndex].rank
+  const yourIndex = orderedRanking.findIndex(entry => entry.userId === userId);
+  const yourRank =
+    yourIndex === -1 ? "No Entry" : orderedRanking[yourIndex].rank;
 
   return (
-      <Paper className="ranking-container">
-        <div className="ranking-title">Ranking {language} {title}</div>
-        <div className="ranking-you">Your Rank is {yourRank} / {orderedRanking.length}</div>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={orderedRanking.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Rank</TableCell>
-                <TableCell>User ID</TableCell>
-                <TableCell>Score</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orderedRanking.slice(page*rowsPerPage, (page+1)*rowsPerPage).map(({ rank, userId, score }, index) => {
+    <Paper className="ranking-container">
+      <div className="ranking-title">
+        Ranking {language} {title}
+      </div>
+      <div className="ranking-you">
+        Your Rank is {yourRank} / {orderedRanking.length}
+      </div>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        component="div"
+        count={orderedRanking.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Rank</TableCell>
+              <TableCell>User ID</TableCell>
+              <TableCell>Score</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orderedRanking
+              .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+              .map(({ rank, userId, score }, index) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{rank}</TableCell>
                     <TableCell>{userId}</TableCell>
                     <TableCell>{score}</TableCell>
                   </TableRow>
-                )
+                );
               })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 50, 100]}
-          component="div"
-          count={orderedRanking.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </Paper>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        component="div"
+        count={orderedRanking.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Paper>
   );
-}
-
+};

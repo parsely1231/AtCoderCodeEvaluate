@@ -3,36 +3,35 @@ import {
   HashRouter as Router,
   Route,
   Switch,
-  Redirect,
+  Redirect
 } from "react-router-dom";
 
-import { useLocalStorage } from "./utils/useLocalStrage"
+import { useLocalStorage } from "./utils/useLocalStrage";
 
-import { NavigationBar } from "./components/NavigationBar"
-import { ContestTablePage } from "./pages/TablePage/index"
-import { UserPage } from "./pages/UserPage/index"
-import { RankingPage } from "./pages/RankingPage/index"
-
+import { NavigationBar } from "./components/NavigationBar";
+import { ContestTablePage } from "./pages/TablePage/index";
+import { UserPage } from "./pages/UserPage/index";
+import { RankingPage } from "./pages/RankingPage/index";
 
 interface IdProps {
-  id: string
+  id: string;
 }
 
-const IdPage: React.FC<IdProps> = (props) => {
+const IdPage: React.FC<IdProps> = props => {
   return (
     <div>
       <p>ID PAGE</p>
       <p>id = {props.id}</p>
     </div>
-  )
-}
-
-console.log('APP page')
-
+  );
+};
 
 const App = () => {
-  const [userId, setUserId] = useLocalStorage("userName", "")
-  const [language, setLanguage] = useLocalStorage("language", "C++14 (GCC 5.4.1)")
+  const [userId, setUserId] = useLocalStorage("userName", "");
+  const [language, setLanguage] = useLocalStorage(
+    "language",
+    "C++14 (GCC 5.4.1)"
+  );
 
   return (
     <Router>
@@ -51,39 +50,29 @@ const App = () => {
             exact
             path="/"
             component={() => (
-              <div>AtCoder XXXXXXXXX
+              <div>
+                AtCoder XXXXXXXXX
                 <p>root page</p>
               </div>
             )}
           />
           <Route path="/table">
-            <ContestTablePage
-              userId={userId}
-              language={language}
-            />
+            <ContestTablePage userId={userId} language={language} />
           </Route>
 
           <Route path="/user">
-            <UserPage
-              userId={userId}
-              language={language}
-              />
+            <UserPage userId={userId} language={language} />
           </Route>
 
           <Route exact path="/ranking">
-            <RankingPage
-              userId={userId}
-              language={language}
-            />
+            <RankingPage userId={userId} language={language} />
           </Route>
 
           <Route
             path="/abc/:id"
             render={({ match }) => {
-              const id:string = match.params.id
-              return (
-                <IdPage id={id} />
-              );
+              const id: string = match.params.id;
+              return <IdPage id={id} />;
             }}
           />
           <Redirect path="/arc" to="/" />
