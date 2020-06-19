@@ -1,7 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import Paper from "@material-ui/core/Paper";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
+import React from "react";
+
 
 import { StatusPieChart } from "./StatusPieChart";
 import { StatusCount } from "../../interfaces/interfaces";

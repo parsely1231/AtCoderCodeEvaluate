@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { connect, PromiseState } from "react-refetch";
-
 import { Paper, Tabs, Tab, LinearProgress } from "@material-ui/core";
 
 import {
@@ -13,13 +12,10 @@ import {
   Submission,
   BorderData,
   Problem,
-  StatusCount,
-  ContestType
 } from "../../interfaces/interfaces";
 import {
   toCodeStatusMap,
   calcProblemCountByRank,
-  calculateRank,
   calcStatusCountByProblemRank
 } from "../../utils/calculate";
 

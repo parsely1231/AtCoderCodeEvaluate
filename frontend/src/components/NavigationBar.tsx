@@ -1,9 +1,7 @@
-import React, { Children } from "react";
+import React from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import { Link, Zoom, CssBaseline, useScrollTrigger } from "@material-ui/core";
 
 import { MyLinksMenu } from "./MyLinksMenu";
 import { InputBox } from "./InputBox";
