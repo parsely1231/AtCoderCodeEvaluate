@@ -40,7 +40,7 @@ class CodeSizeStatus(models.Model):
         unique_together = (('problem_id', 'language'),)
 
     problem_id = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    language = models.CharField(max_length=20)
+    language = models.CharField(max_length=40)
     rank_a = models.IntegerField()
     rank_b = models.IntegerField()
     rank_c = models.IntegerField()
@@ -56,7 +56,7 @@ class ExecTimeStatus(models.Model):
         unique_together = (('problem_id', 'language'),)
 
     problem_id = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    language = models.CharField(max_length=20)
+    language = models.CharField(max_length=40)
     rank_a = models.IntegerField()
     rank_b = models.IntegerField()
     rank_c = models.IntegerField()
@@ -71,8 +71,8 @@ class UserRankingStatus(models.Model):
         db_table = 'user_ranking_statuses'
         unique_together = (('user_name', 'language'),)
 
-    user_name = models.CharField(max_length=40)
-    language = models.CharField(max_length=20)
+    user_name = models.CharField(max_length=50)
+    language = models.CharField(max_length=40)
     ac_count = models.IntegerField()
     code_size_points = models.IntegerField()
     exec_time_points = models.IntegerField()
