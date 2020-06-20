@@ -91,7 +91,9 @@ export const RankingTable: React.FC<RankingTableProps> = ({
 
   const yourIndex = orderedRanking.findIndex(entry => entry.userId === userId);
   const yourRank =
-    yourIndex === -1 ? "No Entry" : orderedRanking[yourIndex].rank;
+    yourIndex === -1 
+    ? "No Entry" 
+    : orderedRanking[yourIndex].rank;
 
   return (
     <Paper className="ranking-container">

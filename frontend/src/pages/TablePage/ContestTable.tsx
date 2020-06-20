@@ -94,7 +94,7 @@ export const ContestTable: React.FC<TableProps> = ({
     () => toCodeStatusMap(submissions, "length"),
     [submissions]
   );
-
+  
   return (
     <div className="contest-table">
       <h2>{title}</h2>

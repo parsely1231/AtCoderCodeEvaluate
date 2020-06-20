@@ -123,8 +123,6 @@ export const languageList: string[] = [
   "Python (2.7.3)",
   "Python (3.8.2)",
   "Python2 (2.7.6)",
-  "Python3 (3.2.3)",
-  "Python3 (3.4.2)",
   "Python3 (3.4.3)",
   "Racket (7.6)",
   "Raku (Rakudo 2020.02.1)",

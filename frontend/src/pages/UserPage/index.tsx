@@ -124,9 +124,9 @@ const InnerUserPage: React.FC<InnerProps> = ({
 
   return (
     <div>
-      <h1>
-        Hello {userId}! language={language}
-      </h1>
+      <h2>
+        Hello {userId} language: {language}
+      </h2>
       <Paper square>
         <Tabs
           value={statusType}
@@ -160,7 +160,7 @@ const InnerUserPage: React.FC<InnerProps> = ({
           )}
         />
         <PieChartBlock
-          title="AtCoder Begginer Contest"
+          title="AtCoder Grand Contest"
           statusCountByProblemRank={calcStatusCountByProblemRank(
             execStatusMap,
             execBorderMap,
@@ -191,7 +191,7 @@ const InnerUserPage: React.FC<InnerProps> = ({
           )}
         />
         <PieChartBlock
-          title="AtCoder Begginer Contest"
+          title="AtCoder Grand Contest"
           statusCountByProblemRank={calcStatusCountByProblemRank(
             lengthStatusMap,
             lengthBorderMap,

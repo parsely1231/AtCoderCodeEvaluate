@@ -7,9 +7,9 @@ import {
   Submission
 } from "../interfaces/interfaces";
 
-const API_BASE_URL = "/api";
-const PROBLEMS_URL = "/atcoder/resources/problems.json";
-const SUBMISSION_URL = "/atcoder/atcoder-api";
+const API_BASE_URL = `${process.env.BACKEND_API_URL}/api`;
+const PROBLEMS_URL = "https://kenkoooo.com/atcoder/resources/problems.json";
+const SUBMISSION_URL = "https://kenkoooo.com/atcoder/atcoder-api";
 
 // ***************** Fetch Ranking *****************
 
@@ -68,7 +68,7 @@ export const cachedProblems = () => {
 
 // ***************** Fetch Contests and Problems *****************
 
-function pushProblemToContestDict(
+export function pushProblemToContestDict(
   contestDict: ContestsWithProblems,
   problem: Problem
 ) {
@@ -79,7 +79,7 @@ function pushProblemToContestDict(
   contestDict.get(contestId)?.push(problem);
 }
 
-async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
+export async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
   const problemsJson = await cachedProblems();
   const contestDict: ContestsWithProblems = problemsJson.reduce(
     (dict, problem) => {

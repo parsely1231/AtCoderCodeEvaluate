@@ -1,3 +1,5 @@
+$yellow: #C0C000;
+
 .container {
   padding: 150px 20px 20px 20px;
   height: 100%;
@@ -32,7 +34,7 @@
       color: orange;
     }
     &-yellow {
-      color: yellow;
+      color: $yellow;
     }
     &-blue {
       color: blue;
@@ -100,7 +102,7 @@
     color: red;
   }
   &-4 {
-    color: "#C0C000";
+    color: $yellow;
   }
   &-3 {
     color: blue;
@@ -166,4 +168,50 @@
 
 .MuiFormControl-root {
   max-width: 40%;
+}
+
+.home-container {
+  margin-bottom: 100px;
+
+  & div {
+    margin-bottom: 40px;
+  }
+  
+  & h2 {
+    border-bottom: cadetblue;
+    border-bottom-style: double;
+  }
+
+  & p {
+    padding-left: 20px;
+  }
+
+  & h4 {
+    padding-left: 40px;
+  }
+
+  & .red {
+    color: red;
+  }
+  & .orange {
+    color:orange;
+  }
+  & .yellow {
+    color: $yellow;
+  }
+  & .blue {
+    color: blue;
+  }
+  & .cyan {
+    color: cyan;
+  }
+  & .green {
+    color: green;
+  }
+  & .brown {
+    color: brown;
+  }
+  & .gray {
+    color: gray;
+  }
 }

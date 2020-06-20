@@ -41,6 +41,11 @@ export function calcProblemCountByRank(problems: Problem[]) {
   for (const problem of problems) {
     const contestType = problem.id.slice(0, 3);
     let preProblemRank = problem.id.slice(-1);
+    
+    // AGCにひとつだけF2というRankがあるのでその対応
+    if (contestType === "agc" && preProblemRank === "2") {
+      preProblemRank = "f";
+    }
 
     // 初期ABCとARCがabc001_1のようにproblemIdの末尾が数字になっているのでその対応
     if (preProblemRank === "1") {
@@ -51,11 +56,6 @@ export function calcProblemCountByRank(problems: Problem[]) {
       preProblemRank = "c";
     } else if (preProblemRank === "4") {
       preProblemRank = "d";
-    }
-
-    // AGCにひとつだけF2というRankがあるのでその対応
-    if (contestType === "agc" && preProblemRank === "2") {
-      preProblemRank = "f";
     }
 
     const problemRank: ProblemRank = preProblemRank as ProblemRank;
@@ -123,7 +123,11 @@ export function calcStatusCountByProblemRank(
     const border = borderMap.get(problemId);
     const solvedRank = calculateRank(status, border);
     let preProblemRank = problemId.slice(-1);
-
+    
+    // AGCにひとつだけF2というRankがあるのでその対応
+    if (contestType === "agc" && preProblemRank === "2") {
+      preProblemRank = "f";
+    }
     // 初期ABCとARCがabc001_1のようにproblemIdの末尾が数字になっているのでその対応
     if (preProblemRank === "1") {
       preProblemRank = "a";
@@ -133,11 +137,6 @@ export function calcStatusCountByProblemRank(
       preProblemRank = "c";
     } else if (preProblemRank === "4") {
       preProblemRank = "d";
-    }
-
-    // AGCにひとつだけF2というRankがあるのでその対応
-    if (contestType === "agc" && preProblemRank === "2") {
-      preProblemRank = "f";
     }
 
     const problemRank: ProblemRank = preProblemRank as ProblemRank;

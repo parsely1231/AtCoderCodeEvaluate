@@ -12,6 +12,7 @@ import { NavigationBar } from "./components/NavigationBar";
 import { ContestTablePage } from "./pages/TablePage/index";
 import { UserPage } from "./pages/UserPage/index";
 import { RankingPage } from "./pages/RankingPage/index";
+import { HomePage } from "./pages/HomePage/index"
 
 interface IdProps {
   id: string;
@@ -46,16 +47,9 @@ const App = () => {
 
       <div className="container">
         <Switch>
-          <Route
-            exact
-            path="/"
-            component={() => (
-              <div>
-                AtCoder XXXXXXXXX
-                <p>root page</p>
-              </div>
-            )}
-          />
+          <Route exact path="/">
+            <HomePage/>
+          </Route>
           <Route path="/table">
             <ContestTablePage userId={userId} language={language} />
           </Route>
@@ -75,7 +69,7 @@ const App = () => {
               return <IdPage id={id} />;
             }}
           />
-          <Redirect path="/arc" to="/" />
+          <Redirect path="/" to="/" />
         </Switch>
       </div>
     </Router>
