@@ -68,8 +68,7 @@ export const InnerContestTablePage: React.FC<InnerProps> = ({
     ? [...contestsWithProblemsFetch.value.entries()].reverse().map(
         (entry): Contest => {
           const [contestId, problems]: [string, Problem[]] = entry;
-          console.log(contestId)
-          console.log(problems)
+
           return {
             contestId: contestId,
             problems: problems,
@@ -92,8 +91,6 @@ export const InnerContestTablePage: React.FC<InnerProps> = ({
       )
     : [];
   
-  console.log(contests)
-
   return (
     <div className="contest-table-page">
       <div>
