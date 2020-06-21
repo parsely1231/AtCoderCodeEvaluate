@@ -7,7 +7,7 @@ import {
   Submission
 } from "../interfaces/interfaces";
 
-const API_BASE_URL = `${process.env.BACKEND_API_URL}/api`;
+const API_BASE_URL = "http://18.181.153.217//api";
 const PROBLEMS_URL = "https://kenkoooo.com/atcoder/resources/problems.json";
 const SUBMISSION_URL = "https://kenkoooo.com/atcoder/atcoder-api";
 
