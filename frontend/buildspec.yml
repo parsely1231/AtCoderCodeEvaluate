@@ -4,6 +4,7 @@ phases:
   install:
     commands:
       - npm install -g yarn
+      - cd frontend
       - yarn
 
   build:
