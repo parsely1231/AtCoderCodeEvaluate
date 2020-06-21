@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - npm install -g yarn
+      - yarn
+
+  build:
+    commands:
+      - yarn build
+
+  post_build:
+    commands:
+      - tar cf /tmp/node_modules.tar node_modules
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
+cache:
+  paths:
+    - /tmp/node_modules.tar
