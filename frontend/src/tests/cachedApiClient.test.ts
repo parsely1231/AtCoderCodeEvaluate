@@ -1,4 +1,4 @@
-import { pushProblemToContestDict, fetchContestsWithProblems } from "./cachedApiClient"
+import { pushProblemToContestDict, problemsJsonToContestDict } from "../utils/cachedApiClient"
 import { Problem, ContestsWithProblems } from "../interfaces/interfaces"
 import { testProblemJson} from "./testProblem"
 
@@ -37,16 +37,10 @@ describe("pushProblemToContestDict", (): void => {
   });
 });
 
-describe("fetchContestsWithProblems", () => {
+describe("problemsJsonToContestDict", () => {
   test("testProblemJson read", () => {
     const problemsJson = testProblemJson
-    const contestDict: ContestsWithProblems = problemsJson.reduce(
-      (dict, problem) => {
-        pushProblemToContestDict(dict, problem);
-        return dict;
-      },
-      new Map() as ContestsWithProblems
-    );
+    const contestDict: ContestsWithProblems = problemsJsonToContestDict(problemsJson)
     expect(contestDict).toStrictEqual(new Map (
          [
            ["abc001", [

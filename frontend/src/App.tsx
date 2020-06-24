@@ -8,7 +8,7 @@ import {
 
 import { useLocalStorage } from "./utils/useLocalStrage";
 
-import { NavigationBar } from "./components/NavigationBar";
+import { NavigationBar } from "./headerComponents/NavigationBar";
 import { ContestTablePage } from "./pages/TablePage/index";
 import { UserPage } from "./pages/UserPage/index";
 import { RankingPage } from "./pages/RankingPage/index";
