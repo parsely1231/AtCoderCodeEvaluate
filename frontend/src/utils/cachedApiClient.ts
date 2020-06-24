@@ -7,7 +7,7 @@ import {
   Submission
 } from "../interfaces/interfaces";
 
-const API_BASE_URL = "http://18.181.153.217//api";
+const API_BASE_URL = "https://api.ac-code-eval.com/api";
 const PROBLEMS_URL = "https://kenkoooo.com/atcoder/resources/problems.json";
 const SUBMISSION_URL = "https://kenkoooo.com/atcoder/atcoder-api";
 
