@@ -1,5 +1,4 @@
 import React from "react";
-import { Paper } from "@material-ui/core"
 
 
 export const HomePage: React.FC = () => {
@@ -35,7 +34,8 @@ export const HomePage: React.FC = () => {
       </div>
       <div>
         <h2>当サイトについて</h2>
-        <p>当サイトはAtCoder ProblemsさんのAPIをお借りしています。ソースコードも参考にさせていただきました。</p>
+        <p>当サイトはAtCoder ProblemsさんのAPIをお借りしています。ソースコードも大変参考にさせていただきました。</p>
+        <p>この場を借りて御礼申し上げます。</p>
       </div>
     </div>
   )

@@ -79,16 +79,19 @@ export function pushProblemToContestDict(
   contestDict.get(contestId)?.push(problem);
 }
 
-export async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
-  const problemsJson = await cachedProblems();
-  const contestDict: ContestsWithProblems = problemsJson.reduce(
+export function problemsJsonToContestDict(problemsJson: Problem[]) {
+  return problemsJson.reduce(
     (dict, problem) => {
       pushProblemToContestDict(dict, problem);
       return dict;
     },
     new Map() as ContestsWithProblems
   );
+}
 
+export async function fetchContestsWithProblems(): Promise<ContestsWithProblems> {
+  const problemsJson = await cachedProblems();
+  const contestDict = problemsJsonToContestDict(problemsJson)
   return contestDict;
 }
 
