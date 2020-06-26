@@ -1,0 +1,7 @@
+.idea
+venv
+db.sqlite3
+*.pyc
+*.csv
+.env
+app.log
