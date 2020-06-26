@@ -29,7 +29,8 @@ function calcuAverageScore(
 }
 
 async function fetchRanking(language: string): Promise<RankingEntry[]> {
-  const url = `${API_BASE_URL}/user_status/?language=${language}`;
+  const encodedLanguage = encodeURIComponent(language)
+  const url = `${API_BASE_URL}/user_status/?language=${encodedLanguage}`;
   const res = await fetch(url);
   const json = await res.json();
   return json;
@@ -119,7 +120,8 @@ async function fetchBorder(
   language: string,
   type: BorderType
 ): Promise<Map<string, BorderData>> {
-  const url = `${API_BASE_URL}/${type}/?language=${language}`;
+  const encodedLanguage = encodeURIComponent(language)
+  const url = `${API_BASE_URL}/${type}/?language=${encodedLanguage}`;
   const normalContestTypes = new Set(["abc", "arc", "agc"]);
   const res = await fetch(url);
   const borders: BorderData[] = await res.json();
@@ -169,9 +171,9 @@ async function fetchUserSubmissions(userId: string): Promise<Submission[]> {
   const res = await fetch(url);
   const submissions: Submission[] = await res.json();
   const acSubmissions = filterAC(submissions);
-  const acSubmissionsToNormalContest = filterNormalContest(acSubmissions);
+  const acSubmissionsInNormalContest = filterNormalContest(acSubmissions);
 
-  return acSubmissionsToNormalContest;
+  return acSubmissionsInNormalContest;
 }
 
 const USER_SUBMISSIONS = new Map<string, Promise<Submission[]>>();
