@@ -1,17 +1,45 @@
 import gzip
 import io
 import json
+import logging
+import os
 import pandas as pd
 import requests
+import time
 
-CSV_ROOT = "./csv_files"
+
+formatter = "%(asctime)s:%(message)s"
+logging.basicConfig(level=logging.INFO, format=formatter)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+h = logging.FileHandler("submission_analysis.log")
+logger.addHandler(h)
+
+
+CSV_ROOT = "./csv"
+os.makedirs(CSV_ROOT, exist_ok=True)
+
 
 # Problems
 headers = {"content-type": "application/json"}
 problem_url = "https://kenkoooo.com/atcoder/resources/problems.json"
+
+logger.info({
+    "action": "get problems API",
+    "url": problem_url,
+    "status": "run"
+})
+
 response = requests.get(problem_url, headers=headers)
 problems_json = response.json()
 problems = pd.read_json(json.dumps(problems_json))
+
+logger.info({
+    "action": "get problems API",
+    "url": problem_url,
+    "status": "success"
+})
 
 problems.to_csv(f"{CSV_ROOT}/problems.csv", header=False, index=False)
 
@@ -41,11 +69,34 @@ contests_data.to_csv(f'{CSV_ROOT}/contests.csv', header=False, index=False)
 SUBMISSION_URL = "https://s3-ap-northeast-1.amazonaws.com/kenkoooo/submissions.csv.gz"
 need_columns = ['user_id', 'problem_id', 'language', 'execution_time', 'length', 'result']
 
+logger.info({
+    "action": "get submission.csv.gz",
+    "url": SUBMISSION_URL,
+    "status": "run"
+})
+
+submission_start_time = time.time()
 response = requests.get(SUBMISSION_URL)
 if response.status_code == 200:
     gzip_file = io.BytesIO(response.content)
     with gzip.open(gzip_file, 'rt') as f:
         data = pd.read_csv(f, usecols=need_columns)
+
+    logger.info({
+        "action": "get submission.csv.gz",
+        "url": SUBMISSION_URL,
+        "status": "success",
+        "spend-second": time.time() - submission_start_time
+    })
+else:
+    logger.warning({
+        "action": "get submission.csv.gz",
+        "url": SUBMISSION_URL,
+        "status": "fail",
+        "response-status": response.status_code
+    })
+    exit()
+
 
 data = data.dropna()
 data = data.astype({'execution_time': 'int32'})
@@ -63,6 +114,13 @@ data_leng = data_ac[list_for_leng]
 
 
 # Exec
+logger.info({
+    "action": "calc exec border",
+    "status": "run"
+})
+
+exec_calc_start = time.time()
+
 group_prob_lang_exec = data_exec.groupby(['language', 'problem_id'], as_index=False)
 
 exec_statistics = group_prob_lang_exec.quantile(0.1, interpolation='higher').rename(columns={'execution_time': '10%'})
@@ -70,6 +128,11 @@ exec_statistics['25%'] = group_prob_lang_exec.quantile(0.25, interpolation='high
 exec_statistics['50%'] = group_prob_lang_exec.quantile(0.50, interpolation='higher')['execution_time']
 exec_statistics['75%'] = group_prob_lang_exec.quantile(0.75, interpolation='higher')['execution_time']
 
+logger.info({
+    "action": "calc exec border",
+    "status": "success",
+    "spend-second": time.time() - exec_calc_start
+})
 
 n = len(exec_statistics)
 k = 50000
@@ -77,10 +140,17 @@ k = 50000
 exec_dfs = [exec_statistics.loc[i:i+k-1, :] for i in range(0, n, k)]
 
 for num, exec_df in enumerate(exec_dfs, 1):
-    exec_df.to_csv(f'{CSV_ROOT}/exec_statistics{num}.csv', header=False, index=False)
+    exec_df.to_csv(f'{CSV_ROOT}/exec_border{num}.csv', header=False, index=False)
 
 
 # Length
+
+logger.info({
+    "action": "calc length border",
+    "status": "run"
+})
+
+length_calc_start = time.time()
 group_prob_lang_leng = data_leng.groupby(['language', 'problem_id'], as_index=False)
 
 length_statistics = group_prob_lang_leng.quantile(0.1, interpolation='higher').rename(columns={'length': '10%'})
@@ -88,6 +158,11 @@ length_statistics['25%'] = group_prob_lang_leng.quantile(0.25, interpolation='hi
 length_statistics['50%'] = group_prob_lang_leng.quantile(0.50, interpolation='higher')['length']
 length_statistics['75%'] = group_prob_lang_leng.quantile(0.75, interpolation='higher')['length']
 
+logger.info({
+    "action": "calc length border",
+    "status": "success",
+    "spend-second": time.time() - length_calc_start
+})
 
 n = len(length_statistics)
 k = 50000
@@ -95,10 +170,17 @@ k = 50000
 length_dfs = [length_statistics.loc[i:i+k-1, :] for i in range(0, n, k)]
 
 for num, length_df in enumerate(length_dfs, 1):
-    length_df.to_csv(f'./csv_files/length_statistics{num}.csv', header=False, index=False)
+    length_df.to_csv(f'{CSV_ROOT}/length_border{num}.csv', header=False, index=False)
 
 
 # User Score
+
+logger.info({
+    "action": "calc user scores",
+    "status": "run"
+})
+user_score_calu_start = time.time()
+
 length_statistics['keys'] = length_statistics['language'] + length_statistics['problem_id']
 length_border_dict = length_statistics.set_index('keys')\
                                       .drop(['language', 'problem_id'], axis=1)\
@@ -151,10 +233,22 @@ def create_calcu_func(border_dict):
 calcu_exec_score = create_calcu_func(exec_border_dict)
 calcu_length_score = create_calcu_func(length_border_dict)
 
+logger.info({
+    "action": "calc user scores",
+    "status": "prepare success",
+    "spend-second": time.time() - user_score_calu_start
+})
+
+prepare_end = time.time()
 
 length_scores = user_info['keys_length'].map(calcu_length_score)
 exec_scores = user_info['keys_exec'].map(calcu_exec_score)
 
+logger.info({
+    "action": "calc user scores",
+    "status": "success",
+    "spend-second": time.time() - prepare_end
+})
 
 user_info['length_score'] = length_scores
 user_info['exec_score'] = exec_scores
