@@ -1,4 +1,5 @@
 *.json
 *.csv
 *.ipynb
-csv_files
+*.log
+csv
