@@ -42,7 +42,7 @@ def update_exec_status():
     delete_all_objects(models.ExecTimeStatus)
 
     for num in range(1, 50):
-        exec_status_path = f"{CSV_ROOT}/exec_border{num}"
+        exec_status_path = f"{CSV_ROOT}/exec_border{num}.csv"
         if not os.path.isfile(exec_status_path):
             break
 
@@ -53,7 +53,7 @@ def update_code_size_status():
     delete_all_objects(models.CodeSizeStatus)
 
     for num in range(1, 50):
-        code_size_status_path = f"{CSV_ROOT}/length_border{num}"
+        code_size_status_path = f"{CSV_ROOT}/length_border{num}.csv"
         if not os.path.isfile(code_size_status_path):
             break
 
@@ -64,7 +64,7 @@ def update_rankings():
     delete_all_objects(models.UserRankingStatus)
 
     for num in range(1, 50):
-        user_rankings_path = f"{CSV_ROOT}/user_rankings{num}"
+        user_rankings_path = f"{CSV_ROOT}/user_rankings{num}.csv"
         if not os.path.isfile(user_rankings_path):
             break
 
