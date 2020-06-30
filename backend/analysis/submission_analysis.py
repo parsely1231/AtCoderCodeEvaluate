@@ -3,9 +3,11 @@ import io
 import json
 import logging
 import os
+import time
+from typing import Dict
+
 import pandas as pd
 import requests
-import time
 
 
 formatter = "%(asctime)s:%(message)s"
@@ -17,163 +19,152 @@ h = logging.FileHandler("submission_analysis.log")
 logger.addHandler(h)
 
 
+def log(message: Dict):
+    def decorate(func):
+        def wrapped_func(*args, **kwargs):
+            start = time.time()
+            run = {"status": "run"}
+            logger.info(dict(**message, **run))
+
+            res = func(*args, **kwargs)
+
+            spend = time.time() - start
+            end = {"status": "success", "spend_second": spend}
+            logger.info(dict(**message, **end))
+
+            return res
+
+        return wrapped_func
+    return decorate
+
+
+@log({"action": "get problems API"})
+def get_problems_df(problem_url):
+    headers = {"content-type": "application/json"}
+
+    response = requests.get(problem_url, headers=headers)
+    logger.info({"response-status": response.status_code})
+    problems_json = response.json()
+    problems_df = pd.read_json(json.dumps(problems_json))
+    return problems_df
+
+
+@log({"action": "make contests data frame"})
+def make_contests_df(problems):
+    contests = problems['contest_id'].unique()
+    types = []
+
+    for contest in contests:
+        initial = contest[:3]
+        contest_type = 5
+        if initial == 'abc':
+            contest_type = 1
+        elif initial == 'arc':
+            contest_type = 2
+        elif initial == 'agc':
+            contest_type = 3
+        else:
+            contest_type = 4
+
+        types.append(contest_type)
+
+    contests_df = pd.DataFrame({'id': contests, 'type': types})
+    return contests_df
+
+
+@log({"action": "get submission.csv.tz"})
+def get_submission_df(submission_url):
+    need_columns = ['user_id', 'problem_id', 'language', 'execution_time', 'length', 'result']
+    response = requests.get(submission_url)
+
+    if response.status_code == 200:
+        gzip_file = io.BytesIO(response.content)
+        with gzip.open(gzip_file, 'rt') as f:
+            submission_df = pd.read_csv(f, usecols=need_columns)
+
+        return submission_df
+
+    else:
+        logger.critical({
+            "action": "get submission.csv.gz",
+            "url": submission_url,
+            "status": "fail",
+            "response-status": response.status_code
+        })
+        exit()
+
+
+@ log({"action": "calc status border"})
+def calc_quantiles(lang_prob_group, status_type: str):
+    """
+    :param lang_prob_group: pandas data frame grouped by "language" and "problem_id"
+    :param status_type: "execution_time" or "length"
+    :return: status quantiles data frame
+    """
+    statistics = lang_prob_group.quantile(0.1, interpolation='higher').rename(columns={status_type: '10%'})
+    statistics['25%'] = lang_prob_group.quantile(0.25, interpolation='higher')[status_type]
+    statistics['50%'] = lang_prob_group.quantile(0.50, interpolation='higher')[status_type]
+    statistics['75%'] = lang_prob_group.quantile(0.75, interpolation='higher')[status_type]
+
+    return statistics
+
+
+def split_save(df, row_size, base_file_name):
+    n = len(df)
+    dfs = [df.loc[i:i + row_size - 1, :] for i in range(0, n, row_size)]
+    for num, df in enumerate(dfs, 1):
+        df.to_csv(f'{CSV_ROOT}/{base_file_name}{num}.csv', header=False, index=False)
+
+
+SUBMISSION_URL = "https://s3-ap-northeast-1.amazonaws.com/kenkoooo/submissions.csv.gz"
+PROBLEM_URL = "https://kenkoooo.com/atcoder/resources/problems.json"
 CSV_ROOT = "./csv"
+EXEC_STATICS_FILE_NAME = "exec_border"
+LENGTH_STATICS_FILE_NAME = "length_border"
+
 os.makedirs(CSV_ROOT, exist_ok=True)
 
 
-# Problems
-headers = {"content-type": "application/json"}
-problem_url = "https://kenkoooo.com/atcoder/resources/problems.json"
-
-logger.info({
-    "action": "get problems API",
-    "url": problem_url,
-    "status": "run"
-})
-
-response = requests.get(problem_url, headers=headers)
-problems_json = response.json()
-problems = pd.read_json(json.dumps(problems_json))
-
-logger.info({
-    "action": "get problems API",
-    "url": problem_url,
-    "status": "success"
-})
-
+problems = get_problems_df(PROBLEM_URL)
 problems.to_csv(f"{CSV_ROOT}/problems.csv", header=False, index=False)
 
-# Contests
-contests = problems['contest_id'].unique()
-types = []
 
-for contest in contests:
-    initial = contest[:3]
-    contest_type = 5
-    if initial == 'abc':
-        contest_type = 1
-    elif initial == 'arc':
-        contest_type = 2
-    elif initial == 'agc':
-        contest_type = 3
-    else:
-        contest_type = 4
-    
-    types.append(contest_type)
+contests_df = make_contests_df(problems)
+contests_df.to_csv(f'{CSV_ROOT}/contests.csv', header=False, index=False)
 
 
-contests_data = pd.DataFrame({'id': contests, 'type': types})
-contests_data.to_csv(f'{CSV_ROOT}/contests.csv', header=False, index=False)
+submission_df = get_submission_df(SUBMISSION_URL)
+submission_df = submission_df.dropna()
+submission_df = submission_df.astype({'execution_time': 'int32'})
 
-# Get Submission Data
-SUBMISSION_URL = "https://s3-ap-northeast-1.amazonaws.com/kenkoooo/submissions.csv.gz"
-need_columns = ['user_id', 'problem_id', 'language', 'execution_time', 'length', 'result']
-
-logger.info({
-    "action": "get submission.csv.gz",
-    "url": SUBMISSION_URL,
-    "status": "run"
-})
-
-submission_start_time = time.time()
-response = requests.get(SUBMISSION_URL)
-if response.status_code == 200:
-    gzip_file = io.BytesIO(response.content)
-    with gzip.open(gzip_file, 'rt') as f:
-        data = pd.read_csv(f, usecols=need_columns)
-
-    logger.info({
-        "action": "get submission.csv.gz",
-        "url": SUBMISSION_URL,
-        "status": "success",
-        "spend-second": time.time() - submission_start_time
-    })
-else:
-    logger.warning({
-        "action": "get submission.csv.gz",
-        "url": SUBMISSION_URL,
-        "status": "fail",
-        "response-status": response.status_code
-    })
-    exit()
-
-
-data = data.dropna()
-data = data.astype({'execution_time': 'int32'})
 
 problems_list = problems["id"].to_list()
-problem_filter = data["problem_id"].isin(problems_list)
-data = data[problem_filter]
-data_ac = data[data['result'] == 'AC']
+problem_filter = submission_df["problem_id"].isin(problems_list)
+submission_df = submission_df[problem_filter]
+data_ac = submission_df[submission_df['result'] == 'AC']
 
-# Exec and Length Status
+
 list_for_exec = ['problem_id', 'language', 'execution_time']
 list_for_leng = ['problem_id', 'language', 'length']
 data_exec = data_ac[list_for_exec]
 data_leng = data_ac[list_for_leng]
 
 
-# Exec
-logger.info({
-    "action": "calc exec border",
-    "status": "run"
-})
-
-exec_calc_start = time.time()
-
-group_prob_lang_exec = data_exec.groupby(['language', 'problem_id'], as_index=False)
-
-exec_statistics = group_prob_lang_exec.quantile(0.1, interpolation='higher').rename(columns={'execution_time': '10%'})
-exec_statistics['25%'] = group_prob_lang_exec.quantile(0.25, interpolation='higher')['execution_time']
-exec_statistics['50%'] = group_prob_lang_exec.quantile(0.50, interpolation='higher')['execution_time']
-exec_statistics['75%'] = group_prob_lang_exec.quantile(0.75, interpolation='higher')['execution_time']
-
-logger.info({
-    "action": "calc exec border",
-    "status": "success",
-    "spend-second": time.time() - exec_calc_start
-})
-
-n = len(exec_statistics)
-k = 50000
-
-exec_dfs = [exec_statistics.loc[i:i+k-1, :] for i in range(0, n, k)]
-
-for num, exec_df in enumerate(exec_dfs, 1):
-    exec_df.to_csv(f'{CSV_ROOT}/exec_border{num}.csv', header=False, index=False)
+group_lang_prob_exec = data_exec.groupby(['language', 'problem_id'], as_index=False)
+exec_statistics = calc_quantiles(group_lang_prob_exec, status_type="execution_time")
+split_save(exec_statistics, row_size=50000, base_file_name=EXEC_STATICS_FILE_NAME)
 
 
-# Length
-
-logger.info({
-    "action": "calc length border",
-    "status": "run"
-})
-
-length_calc_start = time.time()
-group_prob_lang_leng = data_leng.groupby(['language', 'problem_id'], as_index=False)
-
-length_statistics = group_prob_lang_leng.quantile(0.1, interpolation='higher').rename(columns={'length': '10%'})
-length_statistics['25%'] = group_prob_lang_leng.quantile(0.25, interpolation='higher')['length']
-length_statistics['50%'] = group_prob_lang_leng.quantile(0.50, interpolation='higher')['length']
-length_statistics['75%'] = group_prob_lang_leng.quantile(0.75, interpolation='higher')['length']
-
-logger.info({
-    "action": "calc length border",
-    "status": "success",
-    "spend-second": time.time() - length_calc_start
-})
-
-n = len(length_statistics)
-k = 50000
-
-length_dfs = [length_statistics.loc[i:i+k-1, :] for i in range(0, n, k)]
-
-for num, length_df in enumerate(length_dfs, 1):
-    length_df.to_csv(f'{CSV_ROOT}/length_border{num}.csv', header=False, index=False)
+group_lang_prob_leng = data_leng.groupby(['language', 'problem_id'], as_index=False)
+length_statistics = calc_quantiles(group_lang_prob_leng, status_type="length")
+split_save(length_statistics, row_size=50000, base_file_name=LENGTH_STATICS_FILE_NAME)
 
 
 # User Score
+def calc_user_score():
+    """TODO ユーザースコアの計算を関数化して綺麗にする"""
+    pass
+
 
 logger.info({
     "action": "calc user scores",
