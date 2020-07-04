@@ -10,6 +10,15 @@ import pandas as pd
 import requests
 
 
+SUBMISSION_URL = "https://s3-ap-northeast-1.amazonaws.com/kenkoooo/submissions.csv.gz"
+PROBLEM_URL = "https://kenkoooo.com/atcoder/resources/problems.json"
+CSV_ROOT = "./csv"
+EXEC_STATICS_FILE_NAME = "exec_border"
+LENGTH_STATICS_FILE_NAME = "length_border"
+EXEC = "execution_time"
+LENGTH = "length"
+
+
 formatter = "%(asctime)s:%(message)s"
 logging.basicConfig(level=logging.INFO, format=formatter)
 
@@ -94,7 +103,7 @@ def get_submission_df(submission_url):
         exit()
 
 
-@ log({"action": "calc status border"})
+@log({"action": "calc status border"})
 def calc_quantiles(lang_prob_group, status_type: str):
     """
     :param lang_prob_group: pandas data frame grouped by "language" and "problem_id"
@@ -109,6 +118,7 @@ def calc_quantiles(lang_prob_group, status_type: str):
     return statistics
 
 
+@log({"action": "split save"})
 def split_save(df, row_size, base_file_name):
     n = len(df)
     dfs = [df.loc[i:i + row_size - 1, :] for i in range(0, n, row_size)]
@@ -116,11 +126,92 @@ def split_save(df, row_size, base_file_name):
         df.to_csv(f'{CSV_ROOT}/{base_file_name}{num}.csv', header=False, index=False)
 
 
-SUBMISSION_URL = "https://s3-ap-northeast-1.amazonaws.com/kenkoooo/submissions.csv.gz"
-PROBLEM_URL = "https://kenkoooo.com/atcoder/resources/problems.json"
-CSV_ROOT = "./csv"
-EXEC_STATICS_FILE_NAME = "exec_border"
-LENGTH_STATICS_FILE_NAME = "length_border"
+def make_key_from_language_and_problem(statistics: pd.DataFrame):
+    statistics["keys"] = statistics["language"] + statistics["problem_id"]
+
+
+@log({"action": "make border dict"})
+def convert_df_to_dict(statistics: pd.DataFrame):
+    make_key_from_language_and_problem(statistics)
+    border_dict = statistics.set_index("keys")\
+                            .drop(['language', 'problem_id'], axis=1)\
+                            .to_dict(orient="index")
+    return border_dict
+
+
+def get_score_by_border(value, border):
+    if value <= border['10%']:
+        return 5
+
+    elif value <= border['25%']:
+        return 4
+
+    elif value <= border['50%']:
+        return 3
+
+    elif value <= border['75%']:
+        return 2
+
+    else:
+        return 1
+
+
+def make_user_info(submissions: pd.DataFrame):
+    list_for_user_info = ['user_id', 'problem_id', 'language', LENGTH, EXEC]
+    pre_user_info = submissions[list_for_user_info]
+    group_user_lang_prob = pre_user_info.groupby(['user_id', 'language', 'problem_id'], as_index=False)
+    user_info = group_user_lang_prob.min()
+    return user_info
+
+
+def make_user_info_keys(info: pd.DataFrame):
+    info["keys"] = info["language"] + info["problem_id"]
+
+
+def combine_keys_and_status(info: pd.DataFrame):
+    info["keys_length"] = info["keys"] + "&" + info[LENGTH].astype("str")
+    info["keys_exec"] = info["keys"] + "&" + info[EXEC].astype('str')
+
+
+def create_calc_func(border_dict):
+    def calculate_score(key_value):
+        key, value = key_value.split('&')
+        value = int(value)
+        border = border_dict[key]
+        score = get_score_by_border(value, border)
+        return score
+    return calculate_score
+
+
+@log({"action": "calc user score"})
+def calc_user_scores(submissions, length_statistics, exec_statistics):
+    user_info = make_user_info(submissions)
+    make_user_info_keys(user_info)
+    combine_keys_and_status(user_info)
+
+    length_border_dict = convert_df_to_dict(length_statistics)
+    exec_border_dict = convert_df_to_dict(exec_statistics)
+
+    calc_exec_score = create_calc_func(exec_border_dict)
+    calc_length_score = create_calc_func(length_border_dict)
+
+    length_scores = user_info['keys_length'].map(calc_length_score)
+    exec_scores = user_info['keys_exec'].map(calc_exec_score)
+
+    user_info['length_score'] = length_scores
+    user_info['exec_score'] = exec_scores
+
+    user_status = user_info.loc[:, ['user_id', 'language', 'length_score', 'exec_score']]
+
+    user_scores = user_status.groupby(['user_id', 'language'], as_index=False).sum()
+    user_ac_count = user_status.groupby(['user_id', 'language'], as_index=False).count()
+
+    user_scores['ac_count'] = user_ac_count['length_score'].values
+    user_scores['length_ave'] = user_scores['length_score'] / user_scores['ac_count']
+    user_scores['exec_ave'] = user_scores['exec_score'] / user_scores['ac_count']
+
+    return user_scores
+
 
 os.makedirs(CSV_ROOT, exist_ok=True)
 
@@ -135,7 +226,7 @@ contests_df.to_csv(f'{CSV_ROOT}/contests.csv', header=False, index=False)
 
 submission_df = get_submission_df(SUBMISSION_URL)
 submission_df = submission_df.dropna()
-submission_df = submission_df.astype({'execution_time': 'int32'})
+submission_df = submission_df.astype({EXEC: 'int32'})
 
 
 problems_list = problems["id"].to_list()
@@ -144,122 +235,22 @@ submission_df = submission_df[problem_filter]
 data_ac = submission_df[submission_df['result'] == 'AC']
 
 
-list_for_exec = ['problem_id', 'language', 'execution_time']
-list_for_leng = ['problem_id', 'language', 'length']
+list_for_exec = ['problem_id', 'language', EXEC]
+list_for_leng = ['problem_id', 'language', LENGTH]
+
 data_exec = data_ac[list_for_exec]
 data_leng = data_ac[list_for_leng]
 
 
 group_lang_prob_exec = data_exec.groupby(['language', 'problem_id'], as_index=False)
-exec_statistics = calc_quantiles(group_lang_prob_exec, status_type="execution_time")
+exec_statistics = calc_quantiles(group_lang_prob_exec, status_type=EXEC)
 split_save(exec_statistics, row_size=50000, base_file_name=EXEC_STATICS_FILE_NAME)
 
 
 group_lang_prob_leng = data_leng.groupby(['language', 'problem_id'], as_index=False)
-length_statistics = calc_quantiles(group_lang_prob_leng, status_type="length")
+length_statistics = calc_quantiles(group_lang_prob_leng, status_type=LENGTH)
 split_save(length_statistics, row_size=50000, base_file_name=LENGTH_STATICS_FILE_NAME)
 
 
-# User Score
-def calc_user_score():
-    """TODO ユーザースコアの計算を関数化して綺麗にする"""
-    pass
-
-
-logger.info({
-    "action": "calc user scores",
-    "status": "run"
-})
-user_score_calu_start = time.time()
-
-length_statistics['keys'] = length_statistics['language'] + length_statistics['problem_id']
-length_border_dict = length_statistics.set_index('keys')\
-                                      .drop(['language', 'problem_id'], axis=1)\
-                                      .to_dict(orient='index')
-
-exec_statistics['keys'] = exec_statistics['language'] + exec_statistics['problem_id']
-exec_border_dict = exec_statistics.set_index('keys').drop(['language', 'problem_id'], axis=1).to_dict(orient='index')
-
-
-def get_score_by_border(value, border):
-    if value <= border['10%']:
-        return 5
-    
-    elif value <= border['25%']:
-        return 4
-    
-    elif value <= border['50%']:
-        return 3
-    
-    elif value <= border['75%']:
-        return 2
-    
-    else:
-        return 1
-
-
-list_for_user_info = ['user_id', 'problem_id', 'language', 'length', 'execution_time']
-pre_user_info = data_ac[list_for_user_info]
-
-group_user_lang_prob = pre_user_info.groupby(['user_id', 'language', 'problem_id'], as_index=False)
-user_info = group_user_lang_prob.min()
-
-
-user_info['keys'] = user_info['language'] + user_info['problem_id']
-
-user_info['keys_length'] = user_info['keys'] + '&' + user_info['length'].astype('str')
-user_info['keys_exec'] = user_info['keys'] + '&' + user_info['execution_time'].astype('str')
-
-
-def create_calcu_func(border_dict):
-    def calcurate_score(key_value):
-        key, value = key_value.split('&')
-        value = int(value)
-        border = border_dict[key]
-        score = get_score_by_border(value, border)
-        return score
-    return calcurate_score
-
-
-calcu_exec_score = create_calcu_func(exec_border_dict)
-calcu_length_score = create_calcu_func(length_border_dict)
-
-logger.info({
-    "action": "calc user scores",
-    "status": "prepare success",
-    "spend-second": time.time() - user_score_calu_start
-})
-
-prepare_end = time.time()
-
-length_scores = user_info['keys_length'].map(calcu_length_score)
-exec_scores = user_info['keys_exec'].map(calcu_exec_score)
-
-logger.info({
-    "action": "calc user scores",
-    "status": "success",
-    "spend-second": time.time() - prepare_end
-})
-
-user_info['length_score'] = length_scores
-user_info['exec_score'] = exec_scores
-
-
-user_status = user_info.loc[:, ['user_id', 'language', 'length_score', 'exec_score']]
-
-user_scores = user_status.groupby(['user_id', 'language'], as_index=False).sum()
-user_ac_count = user_status.groupby(['user_id', 'language'], as_index=False).count()
-
-
-user_scores['ac_count'] = user_ac_count['length_score'].values
-user_scores['length_ave'] = user_scores['length_score'] / user_scores['ac_count']
-user_scores['exec_ave'] = user_scores['exec_score'] / user_scores['ac_count']
-
-
-n = len(user_scores)
-k = 50000
-user_scores_dfs = [user_scores.loc[i:i+k-1, :] for i in range(0, n, k)]
-
-for num, user_scores_df in enumerate(user_scores_dfs, 1):
-    user_scores_df.drop(['length_ave', 'exec_ave'], axis=1).to_csv(f'{CSV_ROOT}/user_rankings{num}.csv',
-                                                                   index=False, header=False)
+user_scores = calc_user_scores(data_ac, length_statistics, exec_statistics)
+split_save(user_scores, 50000, "user_rankings")
