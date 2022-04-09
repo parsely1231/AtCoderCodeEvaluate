@@ -15,7 +15,7 @@
     "@types/reactstrap": "^8.2.0",
     "@types/recharts": "^1.1.14",
     "immutable": "^4.0.0-rc.12",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "^16.8.3",
     "react-bootstrap-table": "^4.3.1",
     "react-dom": "^16.8.3",
